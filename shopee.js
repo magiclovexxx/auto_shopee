@@ -42,7 +42,6 @@ function GenDirToGetData(maxTab, listAccounts) {
     // Lấy id profile đã tương tác trước đó
     maxid = []
     checkLogoutId = []
-
     var blockAccounts = fs.readFileSync("accountBlock.txt", { flag: "as+" });
 
     if (blockAccounts) {
@@ -104,9 +103,7 @@ function GenDirToGetData(maxTab, listAccounts) {
             savedid.push(item);                                            // Update lại vào file saveid
             fs.appendFileSync('saveidshopee.txt', item + "\n")
         })
-
         return maxid;
-
     } else {
         savedid = [];
         fs.writeFileSync('saveidshopee.txt', savedid.toString())
@@ -122,7 +119,6 @@ loginShopee = async (page, accounts) => {
     const logincheck = await page.$$('.shopee-avatar');
 
     if (!logincheck.length) {
-
         await page.mouse.click(10, 30)
         timeout = Math.floor(Math.random() * (4000 - 3000)) + 3000;
         await page.waitFor(timeout)
@@ -203,7 +199,6 @@ loginShopee = async (page, accounts) => {
                 else if (acc != "") {
                     fs.appendFileSync('shopee.txt', acc + "\n")
                 }
-
             })
             fs.appendFileSync('accountBlock.txt', 'Account bị khoá' + "\n")
             fs.appendFileSync('accountBlock.txt', accounts[0] + "\t" + accounts[1] + "\n")
@@ -227,7 +222,6 @@ loginShopee = async (page, accounts) => {
                 else if (acc != "") {
                     fs.appendFileSync('shopee.txt', acc + "\n")
                 }
-
             })
             console.log("account bị block")
             fs.appendFileSync('accountBlock.txt', 'Account bi khoá' + "\n")
@@ -238,7 +232,6 @@ loginShopee = async (page, accounts) => {
 
         timeout = Math.floor(Math.random() * (2000 - 1000)) + 1000;
         await page.waitFor(timeout)
-
         return true
 
     } else {
@@ -308,7 +301,6 @@ populateClick = async (page, listcategories) => {
                 idcategory = index
                 return true
             }
-
         })
         return idcategory
     }, randomcategory)
@@ -339,18 +331,13 @@ populateClick = async (page, listcategories) => {
                     idcategorychild = index
                     return true
                 }
-
             })
             return idcategorychild
         }, randomcategory)
 
         checkCategoryChild = await page.$$('.shopee-category-list__sub-category');
         await checkCategoryChild[categoryChildId].click()
-
     }
-
-
-
 }
 
 getproduct = async (page, saveProduct, limit, idShops) => {
@@ -441,7 +428,6 @@ getproduct = async (page, saveProduct, limit, idShops) => {
         if (limit == 0) {
             return false
         } else {
-
             limit -= 1;
             next = await page.$$('.shopee-icon-button--right')
             if (next.length) {
@@ -454,7 +440,6 @@ getproduct = async (page, saveProduct, limit, idShops) => {
                 return false
             }
         }
-
     } catch (error) {
         console.log(error)
         return false
@@ -1423,7 +1408,7 @@ checkDcomconnect = async (profileDir) => {
 
     const page = (await browser.pages())[0];
     userAgent = randomUseragent.getRandom(function (ua) {
-        return (ua.osName === 'Windows' && ua.osVersion >= 6);
+        return (ua.osName === 'Windows' && ua.osVersion >= 6 && ua.osVersion != 98);
     });
     await page.setUserAgent(userAgent)
     console.log(userAgent)
@@ -1736,7 +1721,7 @@ runAllTime = async () => {
                     });
                     const page = (await browser.pages())[0];
                     userAgent = randomUseragent.getRandom(function (ua) {
-                        return (ua.osName === 'Windows' && ua.osVersion >= 6);
+                        return (ua.osName === 'Windows' && ua.osVersion >= 6 && ua.osVersion != 98);
                     });
                     await page.setUserAgent(userAgent)
                     console.log(userAgent)
@@ -1993,7 +1978,7 @@ runAllTime = async () => {
 
                         const page = (await browser.pages())[0];
                         userAgent = randomUseragent.getRandom(function (ua) {
-                            return (ua.osName === 'Windows' && ua.osVersion >= 6);
+                            return (ua.osName === 'Windows' && ua.osVersion >= 6 && ua.osVersion != 98);
                         });
 
                         await page.setUserAgent(userAgent)
@@ -2179,7 +2164,7 @@ runAllTime = async () => {
 
                         const page = (await browser.pages())[0];
                         userAgent = randomUseragent.getRandom(function (ua) {
-                            return (ua.osName === 'Windows' && ua.osVersion >= 6);
+                            return (ua.osName === 'Windows' && ua.osVersion >= 6 && ua.osVersion != 98);
                         });
                         await page.setUserAgent(userAgent)
                         console.log(userAgent)

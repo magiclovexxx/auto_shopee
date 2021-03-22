@@ -37,14 +37,19 @@ runAllTime = async () => {
     //     console.log(error)
 
     // }
-    for(let i=1; i<=100; i++){
+    for(let i=1; i<2; i++){
 
         page = 50*i
         shopeesearch = "https://shopee.vn/api/v2/search_items/?by=relevancy&keyword=v%C3%AD%20n%E1%BB%AF%20%C4%91%E1%BA%B9p&limit=50&newest="+page+"&order=desc&page_type=search&version=2"
+        shopInfo = "https://shopee.vn/api/v2/shop/get?shopid=74300615"
+        productInfo = "https://shopee.vn/api/v2/item/get?itemid=6705447143&shopid=74300615"
+        shopProduct = "https://shopee.vn/api/v2/search_items/?by=pop&entry_point=ShopByPDP&limit=100&match_id=19608398&newest=000&order=desc&page_type=shop"
+        keywordApi = "https://shopee.vn/api/v4/search/search_hint?keyword=v%C3%AD%20n%E1%BB%AF&search_type=0&version=1"
+        search_api = "https://shopee.vn/api/v2/search_items/?by=relevancy&keyword=v%C3%AD%20n%E1%BB%AF%20%C4%91%E1%BA%B9p&limit=50&newest=50&order=desc&page_type=search&version=2"
         try {
-            datatest = await axios.get(shopeesearch, {
+            datatest = await axios.get(search_api, {
               
-                headers : headersearch
+               // headers : headersearch
             })
             
         } catch (error) {
@@ -52,10 +57,11 @@ runAllTime = async () => {
             console.log(error)
         }
         data = datatest.data
-        //console.log(datatest.data.items)
+        console.log(datatest.data.items.length)
+        console.log(datatest.data.items[0].name)
         if(data.items != undefined){
-            console.log(i + " --- " +datatest.data.items.length)
-            console.log(datatest.data.items[0].itemid)
+            //console.log(i + " --- " +datatest.data.items.length)
+            //console.log(datatest.data.items[0].itemid)
         }else{
             console.log("Không lấy dc dữ liệu")
         }
