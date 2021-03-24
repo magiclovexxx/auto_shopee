@@ -1408,7 +1408,7 @@ checkDcomconnect = async (profileDir) => {
 
     const page = (await browser.pages())[0];
     userAgent = randomUseragent.getRandom(function (ua) {
-        return (ua.osName === 'Windows' && ua.osVersion >= 6 && ua.osVersion != 98);
+        return (ua.osName === 'Windows' && ua.osVersion >= 6 && ua.osVersion != 98  && ua.osVersion != "Win95");
     });
     await page.setUserAgent(userAgent)
     console.log(userAgent)
@@ -1721,7 +1721,7 @@ runAllTime = async () => {
                     });
                     const page = (await browser.pages())[0];
                     userAgent = randomUseragent.getRandom(function (ua) {
-                        return (ua.osName === 'Windows' && ua.osVersion >= 6 && ua.osVersion != 98);
+                        return (ua.osName === 'Windows' && ua.osVersion >= 6 && ua.osVersion != 98 && ua.osVersion != "Win95");
                     });
                     await page.setUserAgent(userAgent)
                     console.log(userAgent)
@@ -1978,7 +1978,7 @@ runAllTime = async () => {
 
                         const page = (await browser.pages())[0];
                         userAgent = randomUseragent.getRandom(function (ua) {
-                            return (ua.osName === 'Windows' && ua.osVersion >= 6 && ua.osVersion != 98);
+                            return (ua.osName === 'Windows' && ua.osVersion >= 6 && ua.osVersion != 98  && ua.osVersion != "Win95");
                         });
 
                         await page.setUserAgent(userAgent)
@@ -2164,7 +2164,7 @@ runAllTime = async () => {
 
                         const page = (await browser.pages())[0];
                         userAgent = randomUseragent.getRandom(function (ua) {
-                            return (ua.osName === 'Windows' && ua.osVersion >= 6 && ua.osVersion != 98);
+                            return (ua.osName === 'Windows' && ua.osVersion >= 6 && ua.osVersion != 98  && ua.osVersion != "Win95");
                         });
                         await page.setUserAgent(userAgent)
                         console.log(userAgent)
