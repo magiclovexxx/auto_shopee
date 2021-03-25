@@ -1408,7 +1408,7 @@ checkDcomconnect = async (profileDir) => {
 
     const page = (await browser.pages())[0];
     userAgent = randomUseragent.getRandom(function (ua) {
-        return (ua.osName === 'Windows' && ua.osVersion >= 6 && ua.osVersion != 98  && ua.osVersion != "Win95");
+        return (ua.osName === 'Windows' && ua.osVersion >= 6 && ua.osVersion != 98 && ua.osVersion != "Win95");
     });
     await page.setUserAgent(userAgent)
     console.log(userAgent)
@@ -1588,41 +1588,43 @@ runAllTime = async () => {
 
     // lấy dữ liệu từ master
 
-     // lấy dữ liệu từ master
-     checkNetwork = 0
-     await require('dns').resolve('www.google.com', function (err) {
-         if (err) {
-             console.log("No connection1");
-             checkNetwork = 0
- 
-         } else {
-             console.log("Connected");
-             checkNetwork = 1
- 
-         }
-     });
-     await sleep(2000)
-     if (checkNetwork == 0) {
-         console.log("No connection2");
-         // if (mode != "DEV") {
-         await connectDcomV2()
-         await sleep(15000)
- 
-         //  }    
-     }
- 
-     if (checkNetwork == 1) {
-         console.log("connected");
-         //if (mode != "DEV") {
-         // Đổi MAC
-         await genRandomMac()
-         await disconnectDcomV2()
-         await sleep(4000)
-         await connectDcomV2()
-         await sleep(10000)
-         // } 
-     }
+    // lấy dữ liệu từ master
+    checkNetwork = 0
+    await require('dns').resolve('www.google.com', function (err) {
+        if (err) {
+            console.log("No connection1");
+            checkNetwork = 0
 
+        } else {
+            console.log("Connected");
+            checkNetwork = 1
+
+        }
+    });
+
+    if (dcomVersion == "V2") {
+        await sleep(2000)
+        if (checkNetwork == 0) {
+            console.log("No connection2");
+            // if (mode != "DEV") {
+            await connectDcomV2()
+            await sleep(15000)
+
+            //  }    
+        }
+
+        if (checkNetwork == 1) {
+            console.log("connected");
+            //if (mode != "DEV") {
+            // Đổi MAC
+            await genRandomMac()
+            await disconnectDcomV2()
+            await sleep(4000)
+            await connectDcomV2()
+            await sleep(10000)
+            // } 
+        }
+    }
 
     try {
         let linkgetdataShopeeDir = ""
@@ -1631,7 +1633,7 @@ runAllTime = async () => {
         console.log(linkgetdataShopeeDir)
         getDataShopee = await axios.get(linkgetdataShopeeDir)
 
-        
+
         dataShopee = getDataShopee.data
         if (clickSanPham != 1) {
             idShops = []
@@ -1704,12 +1706,12 @@ runAllTime = async () => {
         //  console.log()
 
         // Delete profile block
-        
+
         //process.exit()
 
         if (dcomVersion == "V2") {
             // Đổi MAC
-            await genRandomMac()
+            //    await genRandomMac()
         }
 
         // process.exit()
@@ -1793,7 +1795,7 @@ runAllTime = async () => {
 
                             console.log("Đổi ip mạng")
                             if (dcomVersion == "V2") {
-                               // await changeIpDcomV2()
+                                // await changeIpDcomV2()
                             } else {
                                 await page.goto("http://192.168.8.1/html/home.html")
                                 //  timeout = Math.floor(Math.random() * (2000 - 1000)) + 1000;
@@ -2031,7 +2033,7 @@ runAllTime = async () => {
 
                         const page = (await browser.pages())[0];
                         userAgent = randomUseragent.getRandom(function (ua) {
-                            return (ua.osName === 'Windows' && ua.osVersion >= 6 && ua.osVersion != 98  && ua.osVersion != "Win95");
+                            return (ua.osName === 'Windows' && ua.osVersion >= 6 && ua.osVersion != 98 && ua.osVersion != "Win95");
                         });
 
                         await page.setUserAgent(userAgent)
@@ -2050,7 +2052,7 @@ runAllTime = async () => {
                                 // đổi ip
                                 console.log("Đổi ip mạng")
                                 if (dcomVersion == "V2") {
-                                   // await changeIpDcomV2()
+                                    // await changeIpDcomV2()
                                 } else {
                                     await page.goto("http://192.168.8.1/html/home.html")
                                     //  timeout = Math.floor(Math.random() * (2000 - 1000)) + 1000;
@@ -2217,7 +2219,7 @@ runAllTime = async () => {
 
                         const page = (await browser.pages())[0];
                         userAgent = randomUseragent.getRandom(function (ua) {
-                            return (ua.osName === 'Windows' && ua.osVersion >= 6 && ua.osVersion != 98  && ua.osVersion != "Win95");
+                            return (ua.osName === 'Windows' && ua.osVersion >= 6 && ua.osVersion != 98 && ua.osVersion != "Win95");
                         });
                         await page.setUserAgent(userAgent)
                         console.log(userAgent)
@@ -2235,7 +2237,7 @@ runAllTime = async () => {
                                 // đổi ip
                                 console.log("Đổi ip mạng")
                                 if (dcomVersion == "V2") {
-                                   // await changeIpDcomV2()
+                                    // await changeIpDcomV2()
                                 } else {
                                     await page.goto("http://192.168.8.1/html/home.html")
                                     //  timeout = Math.floor(Math.random() * (2000 - 1000)) + 1000;
