@@ -1,0 +1,1 @@
+%Windir%\system32\rasdial /disconnect

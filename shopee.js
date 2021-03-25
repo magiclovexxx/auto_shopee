@@ -1554,9 +1554,75 @@ genRandomMac = async () => {
     return commandLineChange
 }
 
+
+function sleep(ms) {
+    return new Promise((resolve) => {
+        setTimeout(resolve, ms);
+    });
+}
+
+disconnectDcomV2 = async () => {
+    const disDcom = await exec('disconnect.bat /');
+    disDcom.stdout.on('data', (data) => {
+        // do whatever you want here with data
+    });
+    disDcom.stderr.on('data', (data) => {
+        console.error(data);
+    });
+
+}
+
+connectDcomV2 = async () => {
+
+    const connectdcom1 = await exec('connect.bat /');
+    connectdcom1.stdout.on('data', (data) => {
+        // do whatever you want here with data
+    });
+    connectdcom1.stderr.on('data', (data) => {
+        console.error(data);
+    });
+
+}
+
 runAllTime = async () => {
 
     // lấy dữ liệu từ master
+
+     // lấy dữ liệu từ master
+     checkNetwork = 0
+     await require('dns').resolve('www.google.com', function (err) {
+         if (err) {
+             console.log("No connection1");
+             checkNetwork = 0
+ 
+         } else {
+             console.log("Connected");
+             checkNetwork = 1
+ 
+         }
+     });
+     await sleep(2000)
+     if (checkNetwork == 0) {
+         console.log("No connection2");
+         // if (mode != "DEV") {
+         await connectDcomV2()
+         await sleep(15000)
+ 
+         //  }    
+     }
+ 
+     if (checkNetwork == 1) {
+         console.log("connected");
+         //if (mode != "DEV") {
+         // Đổi MAC
+         await genRandomMac()
+         await disconnectDcomV2()
+         await sleep(4000)
+         await connectDcomV2()
+         await sleep(10000)
+         // } 
+     }
+
 
     try {
         let linkgetdataShopeeDir = ""
@@ -1565,20 +1631,7 @@ runAllTime = async () => {
         console.log(linkgetdataShopeeDir)
         getDataShopee = await axios.get(linkgetdataShopeeDir)
 
-        if (getDataShopee.data.shops == undefined) {
-
-            checkDcomOff = await checkDcomconnect(profileDir)
-            console.log("Kết nối lại dcom: " + checkDcomOff);
-
-            if (checkDcomOff) {
-                getDataShopee = await axios.get(linkgetdataShopeeDir);
-            }
-        }
-
-        if (checkDcomOff == false) {
-            console.log("Không thể kểt nối mạng")
-            return false
-        }
+        
         dataShopee = getDataShopee.data
         if (clickSanPham != 1) {
             idShops = []
@@ -1740,7 +1793,7 @@ runAllTime = async () => {
 
                             console.log("Đổi ip mạng")
                             if (dcomVersion == "V2") {
-                                await changeIpDcomV2()
+                               // await changeIpDcomV2()
                             } else {
                                 await page.goto("http://192.168.8.1/html/home.html")
                                 //  timeout = Math.floor(Math.random() * (2000 - 1000)) + 1000;
@@ -1997,7 +2050,7 @@ runAllTime = async () => {
                                 // đổi ip
                                 console.log("Đổi ip mạng")
                                 if (dcomVersion == "V2") {
-                                    await changeIpDcomV2()
+                                   // await changeIpDcomV2()
                                 } else {
                                     await page.goto("http://192.168.8.1/html/home.html")
                                     //  timeout = Math.floor(Math.random() * (2000 - 1000)) + 1000;
@@ -2182,7 +2235,7 @@ runAllTime = async () => {
                                 // đổi ip
                                 console.log("Đổi ip mạng")
                                 if (dcomVersion == "V2") {
-                                    await changeIpDcomV2()
+                                   // await changeIpDcomV2()
                                 } else {
                                     await page.goto("http://192.168.8.1/html/home.html")
                                     //  timeout = Math.floor(Math.random() * (2000 - 1000)) + 1000;
