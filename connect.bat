@@ -1,1 +1,1 @@
-%Windir%\system32\rasdial "MTN Data"
+%Windir%\system32\rasdial "Cellular"
