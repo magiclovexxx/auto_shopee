@@ -180,7 +180,7 @@ loginShopee = async (page, accounts) => {
             fs.appendFileSync('accountBlock.txt', 'Account bi hỏi mã' + "\n")
             fs.appendFileSync('accountBlock.txt', accounts[0] + "\t" + accounts[1] + "\n")
 
-            return false
+            return 2
         }
 
         checkblock = await page.$('[role="alert"]')
@@ -202,31 +202,28 @@ loginShopee = async (page, accounts) => {
             })
             fs.appendFileSync('accountBlock.txt', 'Account bị khoá' + "\n")
             fs.appendFileSync('accountBlock.txt', accounts[0] + "\t" + accounts[1] + "\n")
-            await deleteProfile(accounts[0])
-            return false
+           
+            return 2
+        }
+
+        let checkblock2 = await page.$('.stardust-icon-cross-with-circle')
+        if(checkblock2){
+            let checkblock3 = await page.evaluate(() => {
+                // Class có tài khoản bị cấm       
+                let titles = document.querySelector('.stardust-icon-cross-with-circle').parentElement.parentElement.children[1].textContent;
+                return titles
+            })
+    
+            if (checkblock3 == "Tài khoản đã bị cấm") {
+                console.log("account bị khoá")
+                return 2
+            }
         }
 
         try {
             await page.waitForSelector('.shopee-searchbar-input');
         } catch (error) {
-            accountText = accounts[0] + "\t" + accounts[1]
-            indexAccount = AllAccounts.indexOf(accountText)
-
-            AllAccounts.splice(indexAccount, 1)
-            AllAccounts.forEach((acc, index) => {
-                if (index == 0 && acc != "") {
-                    fs.writeFileSync("shopee.txt", acc + "\n")
-                } else if (acc != "" && index == (AllAccounts.length - 1)) {
-                    fs.appendFileSync('shopee.txt', acc)
-                }
-                else if (acc != "") {
-                    fs.appendFileSync('shopee.txt', acc + "\n")
-                }
-            })
-            console.log("account bị block")
-            fs.appendFileSync('accountBlock.txt', 'Account bi khoá' + "\n")
-            fs.appendFileSync('accountBlock.txt', accounts[0] + "\t" + accounts[1] + "\n")
-            await deleteProfile(accounts[0])
+            console.log("Đăng nhập lỗi")
             return false
         }
 
@@ -2010,6 +2007,9 @@ runAllTime = async () => {
                                 }
                             }
                             await browser.close();
+                        }else if (checklogin == 2) {                           
+                            await browser.close();
+                            await deleteProfile(accounts[0])
                         }
                     } catch (error) {
                         console.log(error)
