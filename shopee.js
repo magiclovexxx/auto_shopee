@@ -1751,7 +1751,6 @@ runAllTime = async () => {
 
                 if (clickAds == 1) {
                     console.log("----- START CLICK ADS -----")
-                    //   extension = __dirname + "\\extension\\autoshopee\\1.7.5_0"
                     extension = ""
                     let profileChrome = profileDir + key[0]        // Link profile chromium của từng tài khoản facebook
                     console.log("Profile chrome link: " + profileChrome)
