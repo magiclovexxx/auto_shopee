@@ -960,7 +960,24 @@ getproductAdsClickShop = async (page, idShops, limit) => {
 
 get_vi_tri_san_pham_ads_lien_quan = async (page, shop_loai_tru_ads_lien_quan, shop_click_ads_lien_quan) => {
     try {
-        xxx = await page.waitForSelector('[data-sqe="link"]')
+        await page.keyboard.press('PageDown');
+        timeout = Math.floor(Math.random() * (2000 - 1000)) + 1000;
+        await page.waitFor(timeout);
+        await page.keyboard.press('PageDown');
+        timeout = Math.floor(Math.random() * (2000 - 1000)) + 1000;
+        await page.waitFor(timeout);
+        await page.keyboard.press('PageDown');
+        timeout = Math.floor(Math.random() * (2000 - 1000)) + 1000;
+        await page.waitFor(timeout);
+        await page.keyboard.press('PageDown');
+        timeout = Math.floor(Math.random() * (2000 - 1000)) + 1000;
+        await page.waitFor(timeout);
+        await page.keyboard.press('PageDown');
+        timeout = Math.floor(Math.random() * (2000 - 1000)) + 1000;
+        await page.waitFor(timeout);
+        await page.keyboard.press('PageDown');
+
+        xxx = await page.$$('[data-sqe="link"]')
         console.log("Tổng số sản phẩm tương tự" + xxx.length)
 
         get_vi_tri_san_pham_click = await page.evaluate((shop_click_ads_lien_quan, shop_loai_tru_ads_lien_quan) => {
@@ -972,7 +989,7 @@ get_vi_tri_san_pham_ads_lien_quan = async (page, shop_loai_tru_ads_lien_quan, sh
                 titles.forEach((item, index) => {
                     if (index > 23) {
                         let checkads2 = 0
-                        
+
                         let checkAds = item.children[0].children[0].children[0].children
 
                         //console.log(checkAds.length)
@@ -987,8 +1004,8 @@ get_vi_tri_san_pham_ads_lien_quan = async (page, shop_loai_tru_ads_lien_quan, sh
                                         if (item.href.includes(shop.fullname) == true) {
                                             check_shop_click = {
                                                 vi_tri: index,
-                                                url:item.href
-                                            } 
+                                                url: item.href
+                                            }
                                         }
                                     })
 
@@ -1027,9 +1044,9 @@ get_vi_tri_san_pham_ads_lien_quan = async (page, shop_loai_tru_ads_lien_quan, sh
                             if (check_shop_loai_tru == false) {
                                 check_shop_click = {
                                     vi_tri: index,
-                                    url:item.href,
+                                    url: item.href,
                                     type: "Random"
-                                } 
+                                }
                             }
                         }
                     })
@@ -1994,7 +2011,6 @@ runAllTime = async () => {
                                 await searchKeyWord(page, keywords[randomkey])
                             }
 
-
                             // lấy danh sách product đã lưu
                             var saveProduct = fs.readFileSync("saveProduct.txt", { flag: "as+" });
                             saveProduct = saveProduct.toString();
@@ -2041,7 +2057,7 @@ runAllTime = async () => {
                                 timeout = Math.floor(Math.random() * (5000 - 3000)) + 3000
                                 await page.waitFor(timeout)
                                 await page.keyboard.press('PageDown');
-                                timeout = Math.floor(Math.random() * (30000 - 20000)) + 20000
+                                timeout = Math.floor(Math.random() * (3000 - 2000)) + 2000
                                 await page.waitFor(timeout)
                                 await page.keyboard.press('PageDown');
                                 timeout = Math.floor(Math.random() * (5000 - 3000)) + 3000
@@ -2057,21 +2073,6 @@ runAllTime = async () => {
                                 productInfo_ads_lien_quan = await get_vi_tri_san_pham(page, product_check_id, 10)
 
                                 if (productInfo_ads_lien_quan.vi_tri) {
-                                    await page.keyboard.press('PageDown');
-                                    timeout = Math.floor(Math.random() * (timemax - timemin)) + timemin;
-                                    await page.waitFor(timeout);
-                                    await page.keyboard.press('PageDown');
-                                    timeout = Math.floor(Math.random() * (timemax - timemin)) + timemin;
-                                    await page.keyboard.press('PageDown');
-                                    timeout = Math.floor(Math.random() * (timemax - timemin)) + timemin;
-                                    await page.waitFor(timeout);
-                                    await page.keyboard.press('PageDown');
-                                    timeout = Math.floor(Math.random() * (timemax - timemin)) + timemin;
-                                    await page.keyboard.press('PageDown');
-                                    timeout = Math.floor(Math.random() * (timemax - timemin)) + timemin;
-                                    await page.waitFor(timeout);
-                                    await page.keyboard.press('PageDown');
-                                    timeout = Math.floor(Math.random() * (timemax - timemin)) + timemin;
 
                                     let products_page = await page.$$('[data-sqe="link"]')
                                     // Click sản phẩm của shop
@@ -2080,26 +2081,6 @@ runAllTime = async () => {
                                     await page.waitFor(timeout)
                                     let productLink = await page.url()
 
-
-                                    await page.waitFor(1000);
-                                    await page.keyboard.press('PageDown');
-                                    timeout = Math.floor(Math.random() * (3000 - 2000)) + 2000
-                                    await page.waitFor(timeout)
-                                    await page.keyboard.press('PageDown');
-                                    timeout = Math.floor(Math.random() * (timemax - timemin)) + timemin;
-                                    await page.waitFor(timeout)
-                                    await page.keyboard.press('PageDown');
-                                    timeout = Math.floor(Math.random() * (5000 - 3000)) + 3000
-                                    await page.waitFor(timeout)
-                                    await page.keyboard.press('PageDown');
-                                    timeout = Math.floor(Math.random() * (3000 - 2000)) + 2000
-                                    await page.waitFor(timeout)
-                                    await page.keyboard.press('PageDown');
-                                    timeout = Math.floor(Math.random() * (timemax - timemin)) + timemin;
-                                    await page.waitFor(timeout)
-                                    await page.keyboard.press('PageDown');
-                                    timeout = Math.floor(Math.random() * (5000 - 3000)) + 3000
-                                    await page.waitFor(timeout)
                                     // Xác định các vị trí ads đã loại trừ shop
                                     let indexAds = await get_vi_tri_san_pham_ads_lien_quan(page, shop_loai_tru_ads_lien_quan, shop_click_ads_lien_quan)
 
@@ -2114,17 +2095,17 @@ runAllTime = async () => {
 
                                     // await page.waitFor(999999)
                                     await productsList[indexAds.vi_tri].click()
-                                    timeout = Math.floor(Math.random() * (5000 - 3000)) + 3000
+                                    timeout = Math.floor(Math.random() * (3000 - 1000)) + 1000
                                     await page.waitFor(timeout)
 
                                     console.log("---------- Link sản phẩm click ads ----------")
                                     currentUrl = await page.url()
                                     console.log(currentUrl)
                                     //let checkvariationAds = await chooseVariation(page, 5)
-                                    timeout = Math.floor(Math.random() * (5000 - 3000)) + 3000
+                                    timeout = Math.floor(Math.random() * (3000 - 1000)) + 1000
                                     await page.waitFor(timeout)
                                     await page.keyboard.press('PageDown');
-                                    timeout = Math.floor(Math.random() * (5000 - 3000)) + 3000
+                                    timeout = Math.floor(Math.random() * (3000 - 1000)) + 1000
                                     await page.waitFor(timeout)
                                     await page.keyboard.press('PageDown');
                                     // timeout = Math.floor(Math.random() * (timemax - timemin)) + timemin;
