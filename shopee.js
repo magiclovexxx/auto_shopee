@@ -342,6 +342,7 @@ populateClick = async (page, listcategories) => {
 }
 
 get_vi_tri_san_pham = async (page, product_id, limit) => {
+	try{
     let thuHangSanPham
     await page.keyboard.press('PageDown');
     timeout = Math.floor(Math.random() * (timemax - timemin)) + timemin;
@@ -417,6 +418,9 @@ get_vi_tri_san_pham = async (page, product_id, limit) => {
             return false
         }
     }
+	}catch(error){
+		console.log(error)
+	}
 }
 
 getproduct = async (page, saveProduct, limit, idShops) => {
@@ -960,25 +964,62 @@ getproductAdsClickShop = async (page, idShops, limit) => {
 
 get_vi_tri_san_pham_ads_lien_quan = async (page, shop_loai_tru_ads_lien_quan, shop_click_ads_lien_quan) => {
     try {
-        await page.keyboard.press('PageDown');
+		 await page.keyboard.press('PageDown');
         timeout = Math.floor(Math.random() * (2000 - 1000)) + 1000;
         await page.waitFor(timeout);
-        await page.keyboard.press('PageDown');
+		 await page.keyboard.press('PageDown');
         timeout = Math.floor(Math.random() * (2000 - 1000)) + 1000;
         await page.waitFor(timeout);
-        await page.keyboard.press('PageDown');
-        timeout = Math.floor(Math.random() * (2000 - 1000)) + 1000;
+		 await page.keyboard.press('PageDown');
+        timeout = Math.floor(Math.random() * (2000 - 4000)) + 3000;
+        await page.waitFor(timeout);
+		 await page.keyboard.press('PageDown');
+        timeout = Math.floor(Math.random() * (4000 - 3000)) + 3000;
         await page.waitFor(timeout);
         await page.keyboard.press('PageDown');
-        timeout = Math.floor(Math.random() * (2000 - 1000)) + 1000;
+        timeout = Math.floor(Math.random() * (4000 - 3000)) + 3000;
         await page.waitFor(timeout);
         await page.keyboard.press('PageDown');
-        timeout = Math.floor(Math.random() * (2000 - 1000)) + 1000;
+        timeout = Math.floor(Math.random() * (4000 - 3000)) + 3000;
         await page.waitFor(timeout);
         await page.keyboard.press('PageDown');
-
+        timeout = Math.floor(Math.random() * (4000 - 3000)) + 3000;
+        await page.waitFor(timeout);
+        await page.keyboard.press('PageDown');
+        timeout = Math.floor(Math.random() * (4000 - 3000)) + 3000;
+        await page.waitFor(timeout);
+        await page.keyboard.press('PageDown');
+        timeout = Math.floor(Math.random() * (4000 - 3000)) + 3000;
+        await page.waitFor(timeout);
+        await page.keyboard.press('PageDown');
+		timeout = Math.floor(Math.random() * (6000 - 3000)) + 4000;
+        await page.waitFor(timeout);
         xxx = await page.$$('[data-sqe="link"]')
         console.log("Tổng số sản phẩm tương tự" + xxx.length)
+		if(xxx.length > 0){
+			check_button_click = await page.$$('.carousel-arrow.carousel-arrow--next.carousel-arrow--hint')
+			if(check_button_click.length == 3){
+				await check_button_click[1].click()
+				timeout = Math.floor(Math.random() * (2000 - 1000)) + 1000;
+				await page.waitFor(timeout);
+				await check_button_click[1].click()
+				timeout = Math.floor(Math.random() * (2000 - 1000)) + 1000;
+				await page.waitFor(timeout);
+				await check_button_click[1].click()
+				timeout = Math.floor(Math.random() * (2000 - 1000)) + 1000;
+				await page.waitFor(timeout);
+				await check_button_click[2].click()
+				timeout = Math.floor(Math.random() * (2000 - 1000)) + 1000;
+				await page.waitFor(timeout);
+				await check_button_click[2].click()
+				timeout = Math.floor(Math.random() * (2000 - 1000)) + 1000;
+				await page.waitFor(timeout);
+				await check_button_click[2].click()
+				timeout = Math.floor(Math.random() * (2000 - 1000)) + 1000;
+				await page.waitFor(timeout);
+			}
+		
+		}
 
         get_vi_tri_san_pham_click = await page.evaluate((shop_click_ads_lien_quan, shop_loai_tru_ads_lien_quan) => {
             // Class có link sản phẩm          
@@ -1060,7 +1101,7 @@ get_vi_tri_san_pham_ads_lien_quan = async (page, shop_loai_tru_ads_lien_quan, sh
         return get_vi_tri_san_pham_click
     } catch (error) {
         console.log(error)
-        return false
+        return get_vi_tri_san_pham_click
     }
 }
 
@@ -2070,7 +2111,7 @@ runAllTime = async () => {
                                 console.log("----- Click ADS Lien Quan -----")
                                 let saveProduct = []
 
-                                productInfo_ads_lien_quan = await get_vi_tri_san_pham(page, product_check_id, 10)
+                                productInfo_ads_lien_quan = await get_vi_tri_san_pham(page, product_check_id, 3)
 
                                 if (productInfo_ads_lien_quan.vi_tri) {
 
@@ -2085,6 +2126,7 @@ runAllTime = async () => {
                                     let indexAds = await get_vi_tri_san_pham_ads_lien_quan(page, shop_loai_tru_ads_lien_quan, shop_click_ads_lien_quan)
 
                                     if (indexAds == false) {
+										await page.waitFor(timeout)
                                         return false
                                     }
 
@@ -2101,7 +2143,7 @@ runAllTime = async () => {
                                     console.log("---------- Link sản phẩm click ads ----------")
                                     currentUrl = await page.url()
                                     console.log(currentUrl)
-                                    //let checkvariationAds = await chooseVariation(page, 5)
+                                    let checkvariationAds = await chooseVariation(page, 4)
                                     timeout = Math.floor(Math.random() * (3000 - 1000)) + 1000
                                     await page.waitFor(timeout)
                                     await page.keyboard.press('PageDown');
