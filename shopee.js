@@ -995,7 +995,7 @@ get_vi_tri_san_pham_ads_lien_quan = async (page, shop_loai_tru_ads_lien_quan, sh
 		timeout = Math.floor(Math.random() * (6000 - 3000)) + 4000;
         await page.waitFor(timeout);
         xxx = await page.$$('[data-sqe="link"]')
-        console.log("Tổng số sản phẩm tương tự" + xxx.length)
+        console.log("Tổng số sản phẩm tương tự: " + xxx.length)
 		if(xxx.length > 0){
 			check_button_click = await page.$$('.carousel-arrow.carousel-arrow--next.carousel-arrow--hint')
 			if(check_button_click.length == 3){
@@ -1019,7 +1019,7 @@ get_vi_tri_san_pham_ads_lien_quan = async (page, shop_loai_tru_ads_lien_quan, sh
 				await page.waitFor(timeout);
 			}
 		
-		}
+		
 
         get_vi_tri_san_pham_click = await page.evaluate((shop_click_ads_lien_quan, shop_loai_tru_ads_lien_quan) => {
             // Class có link sản phẩm          
@@ -1097,8 +1097,9 @@ get_vi_tri_san_pham_ads_lien_quan = async (page, shop_loai_tru_ads_lien_quan, sh
             }
             return check_shop_click
         }, shop_click_ads_lien_quan, shop_loai_tru_ads_lien_quan)
-
+    }
         return get_vi_tri_san_pham_click
+    
     } catch (error) {
         console.log(error)
         return get_vi_tri_san_pham_click
@@ -2126,7 +2127,7 @@ runAllTime = async () => {
                                     let indexAds = await get_vi_tri_san_pham_ads_lien_quan(page, shop_loai_tru_ads_lien_quan, shop_click_ads_lien_quan)
 
                                     if (indexAds == false) {
-										await page.waitFor(timeout)
+										await browser.close();
                                         return false
                                     }
 
