@@ -28,6 +28,7 @@ let profileDir = process.env.PROFILE_DIR
 let extension = process.env.EXTENSION
 headless_mode = process.env.HEADLESS_MODE     // che do chay hien thi giao dien
 let dcomVersion = process.env.DCOM
+token = process.env.TOKEN
 phobien = process.env.PHO_BIEN         //Chế độ chạy phổ biến
 // Danh sách profile fb trong file .env
 maxTab = process.env.MAXTAB_SHOPEE                           // Số lượng tab chromium cùng mở tại 1 thời điểm trên slave
@@ -1720,7 +1721,7 @@ runAllTime = async () => {
     try {
         let linkgetdataShopeeDir = ""
         let checkDcomOff
-        linkgetdataShopeeDir = dataShopeeDir + "?slave=" + slavenumber + "&token=kjdaklA190238190Adaduih2ajksdhakAhqiouOEJAK092489ahfjkwqAc92alA&click_ads=" + clickAds + "&type_click=" + typeClick + "&lien_quan=" + lienQuan + "&san_pham=" + clickSanPham
+        linkgetdataShopeeDir = dataShopeeDir + "?slave=" + slavenumber + "&token="+token
         console.log(linkgetdataShopeeDir)
         getDataShopee = await axios.get(linkgetdataShopeeDir)
         dataShopee = getDataShopee.data
@@ -1735,15 +1736,13 @@ runAllTime = async () => {
         console.log("Version hiện tai: " + checkVersion);
         newVersion = dataShopee.version;
         console.log("Version server: " + dataShopee.version);
-        // if (0) {
+        fs.writeFileSync('version.txt', newVersion)
         if (newVersion !== checkVersion && mode != "DEV") {
             console.log("Cập nhật code " + os_slave);
             if (os_slave == "LINUX") {
                 await shell.exec('git stash; git pull origin master');
             } else {
 
-                // Update version mới vào file version.txt
-                fs.writeFileSync('version.txt', newVersion)
                 const myShellScript = exec('update.sh /');
                 myShellScript.stdout.on('data', (data) => {
                     // do whatever you want here with data
@@ -1794,8 +1793,9 @@ runAllTime = async () => {
         shop_loai_tru_ads_lien_quan = dataShopee.shopsLoaiTru
         shop_click_ads_lien_quan = dataShopee.shops_click_ads
         keyword_ads_lien_quan = dataShopee.keywords
+        keywords = []
 
-        if (clickSanPham != 1) {
+        if (slave_info.type != "seo_top") {
             idShops = []
             idShopsfull = dataShopee.shops
             dataShopee.shops.forEach(item => {
@@ -1804,14 +1804,6 @@ runAllTime = async () => {
                     idShops.push(item.fullname)
                 }
             })
-        }
-
-        keywords = []
-
-        if (clickSanPham == 1) {
-            keywords = products = dataShopee.products
-        } else {
-            //   console.log(dataShopee.keywords)
 
             dataShopee.keywords.forEach(item => {
                 if (item.username) {
@@ -1821,14 +1813,15 @@ runAllTime = async () => {
             })
         }
 
-        if (clickSanPham != 1) {
+
+        if (slave_info.type != "seo_top") {
             shopsLoaiTru = []
             dataShopee.shops.forEach(item => {
                 idShop = item.fullname.split("\r")[0]
                 shopsLoaiTru.push(item.fullname)
             })
         }
-        if (typeClick == 1) {
+        if (slave_info.type == "click_ads_vi_tri") {
             indexClickShopee = dataShopee.soLuongAdsClick[0].twofa
         }
 
@@ -1846,7 +1839,7 @@ runAllTime = async () => {
     }
 
     try {
-        orderStatus = 1
+        //orderStatus = 1
         console.log("----------- START SHOPEE ---------------")
         data = accounts
         //  console.log()
@@ -1855,17 +1848,10 @@ runAllTime = async () => {
 
         //process.exit()
 
-        if (dcomVersion == "V2") {
-            // Đổi MAC
-            //    await genRandomMac()
-        }
-
-        // process.exit()
-
         if (data) {
             data.forEach(async (user, index) => {   // Foreach object Chạy song song các tab chromium
 
-                if (clickAds == 1) {
+                if (slave_info.type == "click_ads" || slave_info.type == "click_ads_vi_tri" || slave_info.type == "click_ads_lien_quan") {
                     console.log("----- START CLICK ADS -----")
                     extension = ""
                     let profileChrome = profileDir + user.username        // Link profile chromium của từng tài khoản facebook
@@ -1932,7 +1918,7 @@ runAllTime = async () => {
                             })
                         }
                     } catch (e) {
-                        console.log(" ---- Lỗi set coookie ----")
+                        console.log(" ---- Không có coookie ----")
                     }
 
                     await page.setRequestInterception(true);
@@ -2019,7 +2005,7 @@ runAllTime = async () => {
                                 await browser.close();
                                 return false
                             }
-                            if (lienQuan == 1) {
+                            if (slave_info.type == "click_ads_lien_quan") {
                                 let random_product = Math.floor(Math.random() * (keywords.length - 1))
                                 let product_check = keyword_ads_lien_quan[random_product]
                                 console.log(product_check)
@@ -2070,7 +2056,7 @@ runAllTime = async () => {
                             // danh sách product không nằm trong file saveproduct.txt
                             today = new Date().toLocaleString();
 
-                            if (typeClick == 1) {
+                            if (slave_info.type == "click_ads_vi_tri") {
 
                                 // random vị trí ads
                                 let adsIndex = indexClickShopee;
@@ -2117,7 +2103,9 @@ runAllTime = async () => {
                                 timeout = Math.floor(Math.random() * (10000 - 5000)) + 5000
                                 await page.waitForTimeout(timeout)
 
-                            } else if (lienQuan == 1) {
+                            } 
+                            
+                            if (slave_info.type == "click_ads_lien_quan") {
                                 console.log("----- Click ADS Lien Quan -----")
                                 let saveProduct = []
 
@@ -2169,7 +2157,9 @@ runAllTime = async () => {
                                     await browser.close();
                                     return false
                                 }
-                            } else {
+                            } 
+                            
+                            if (slave_info.type == "click_ads") {
                                 // Click ads theo shop đối thủ
                                 let saveProduct = []
                                 let productInfo = await getproductAdsClickShop(page, idShops, 5)
@@ -2234,8 +2224,8 @@ runAllTime = async () => {
                     await deleteProfile(user.username)
                     console.log("----------- STOP CLICK ADS ---------------")
 
-                } else
-                    if (phobien == 1) {
+                } 
+                if (slave_info.type == "pho_bien") {
                         let profileChrome = profileDir + user.username
                         let param = [
                             `--user-data-dir=${profileChrome}`,      // load profile chromium
@@ -2301,7 +2291,7 @@ runAllTime = async () => {
                                 })
                             }
                         } catch (e) {
-                            console.log(" ---- Lỗi set coookie ----")
+                            console.log(" ---- Không có coookie ----")
                         }
     
                         await page.setRequestInterception(true);
@@ -2496,7 +2486,9 @@ runAllTime = async () => {
                         await browser.close();
                         await deleteProfile(user.username)
                         console.log("----------- STOP PHO BIEN---------------")
-                    } else {
+                    } 
+                    
+                    if (slave_info.type == "seo_top") {
 
                         console.log("----------- CLICK ALL SẢN PHẨM ---------------")
 
@@ -2677,7 +2669,8 @@ runAllTime = async () => {
                                
                             }
                             if (checklogin == true) {
-                                if (clickSanPham == 1) {
+                                if (slave_info.type == "seo_top") {
+                                    keywords = products = dataShopee.products
                                     console.log("----- Click theo sản phẩm -----")
 
                                     // Server trả về dữ liệu sắp xếp theo số lượng lượt tìm kiếm từ nhỏ đến lớn
@@ -2706,7 +2699,7 @@ runAllTime = async () => {
                                         today = new Date().toLocaleString();
                                         productInfo.keyword = product.keyword
                                         productInfo.time = today
-                                        productInfo.user = key[0]
+                                        productInfo.user = user[0]
                                         //productInfo.pass = key[1]
 
                                         try {
