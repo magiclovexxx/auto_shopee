@@ -2219,7 +2219,6 @@ runAllTime = async () => {
                     }
 
                     await browser.close();
-                    await deleteProfile(user.username)
                     console.log("----------- STOP CLICK ADS ---------------")
 
                 }
@@ -2482,7 +2481,6 @@ runAllTime = async () => {
                         await browser.close();
                     }
                     await browser.close();
-                    await deleteProfile(user.username)
                     console.log("----------- STOP PHO BIEN---------------")
                 }
 
@@ -2823,7 +2821,6 @@ runAllTime = async () => {
                         console.log(error)
                     }
                     await browser.close();
-                    await deleteProfile(user.username)
                     console.log("----------- STOP ---------------")
                 }
             })
@@ -2841,7 +2838,11 @@ runAllTime = async () => {
 if (mode === "DEV") {
     (async () => {
         await runAllTime()
-
+        if (os_slave == "LINUX") {
+            await shell.exec('rm -rf ' + profileDir);
+        } else {
+            await shell.exec('Rmdir /S /q ' + profileDir);
+        }
     })();
 } else {
 
