@@ -101,7 +101,7 @@ loginShopee = async (page, accounts) => {
             timeout = Math.floor(Math.random() * (2000 - 1000)) + 1000;
             await page.waitForTimeout(timeout)
             await page.type('[name="password"]', accounts.password, { delay: 200 })    // Nhập comment 
-            
+
             timeout = Math.floor(Math.random() * (5000 - 3000)) + 3000;
             await page.waitForTimeout(timeout)
             const loginbutton = await page.$$('div>button:nth-child(4)');
@@ -1211,7 +1211,7 @@ viewShop = async (page, url) => {
             } catch (error) {
                 console.log(" Khoong click dc bo gio")
             }
-          
+
             timeout = Math.floor(Math.random() * (timemax - timemin)) + timemin;
             await page.waitForTimeout(timeout)
 
@@ -1721,7 +1721,7 @@ runAllTime = async () => {
     try {
         let linkgetdataShopeeDir = ""
         let checkDcomOff
-        linkgetdataShopeeDir = dataShopeeDir + "?slave=" + slavenumber + "&token="+token
+        linkgetdataShopeeDir = dataShopeeDir + "?slave=" + slavenumber + "&token=" + token
         console.log(linkgetdataShopeeDir)
         getDataShopee = await axios.get(linkgetdataShopeeDir)
         dataShopee = getDataShopee.data
@@ -1755,8 +1755,15 @@ runAllTime = async () => {
             return false
         }
 
+        if (slave_info.network == "proxy") {
+            // Lấy proxy từ hotaso
+            console.log("Lấy proxy từ server");
+            proxy = await axios.get(get_proxy_url)
+            proxy = proxy.data
+            //console.log(proxy);
+        }
 
-        if (dcomVersion == "V2") {
+        if (dcomVersion == "V2" && slave_info.network == "dcom") {
             await sleep(2000)
             if (checkNetwork == 0) {
                 console.log("No connection2");
@@ -1771,22 +1778,13 @@ runAllTime = async () => {
                 console.log("connected");
                 //if (mode != "DEV") {
                 // Đổi MAC
-                if (slave_info.network == "dcom") {
-                    await genRandomMac()
-                    await disconnectDcomV2()
-                    await sleep(4000)
-                    await connectDcomV2()
-                    await sleep(10000)
-                }
 
-                if (slave_info.network == "proxy") {
-                    // Lấy proxy từ hotaso
-                    console.log("Lấy proxy từ server");
-                    proxy = await axios.get(get_proxy_url)
-                    proxy = proxy.data
-                    //console.log(proxy);
-                }
-                // } 
+                await genRandomMac()
+                await disconnectDcomV2()
+                await sleep(4000)
+                await connectDcomV2()
+                await sleep(10000)
+
             }
         }
 
@@ -1944,7 +1942,7 @@ runAllTime = async () => {
                             });
                         }
                     }
-                    
+
                     try {
                         if ((index == 0) && (mode !== "DEV")) {
                             // đổi ip
@@ -2103,8 +2101,8 @@ runAllTime = async () => {
                                 timeout = Math.floor(Math.random() * (10000 - 5000)) + 5000
                                 await page.waitForTimeout(timeout)
 
-                            } 
-                            
+                            }
+
                             if (slave_info.type == "click_ads_lien_quan") {
                                 console.log("----- Click ADS Lien Quan -----")
                                 let saveProduct = []
@@ -2157,8 +2155,8 @@ runAllTime = async () => {
                                     await browser.close();
                                     return false
                                 }
-                            } 
-                            
+                            }
+
                             if (slave_info.type == "click_ads") {
                                 // Click ads theo shop đối thủ
                                 let saveProduct = []
@@ -2224,163 +2222,541 @@ runAllTime = async () => {
                     await deleteProfile(user.username)
                     console.log("----------- STOP CLICK ADS ---------------")
 
-                } 
+                }
                 if (slave_info.type == "pho_bien") {
-                        let profileChrome = profileDir + user.username
-                        let param = [
-                            `--user-data-dir=${profileChrome}`,      // load profile chromium
-                            '--disable-gpu',
-                            '--no-sandbox',
-                            '--lang=en-US',
-                            '--disable-setuid-sandbox',
-                            '--disable-dev-shm-usage',
-                            '--disable-background-timer-throttling',
-                            '--disable-backgrounding-occluded-windows',
-                            '--disable-renderer-backgrounding',
-                            '--disable-dev-shm-usage',
-                            '--disable-accelerated-2d-canvas',
-                            '--no-first-run',
-                        ]
+                    let profileChrome = profileDir + user.username
+                    let param = [
+                        `--user-data-dir=${profileChrome}`,      // load profile chromium
+                        '--disable-gpu',
+                        '--no-sandbox',
+                        '--lang=en-US',
+                        '--disable-setuid-sandbox',
+                        '--disable-dev-shm-usage',
+                        '--disable-background-timer-throttling',
+                        '--disable-backgrounding-occluded-windows',
+                        '--disable-renderer-backgrounding',
+                        '--disable-dev-shm-usage',
+                        '--disable-accelerated-2d-canvas',
+                        '--no-first-run',
+                    ]
 
-                        if (slave_info.network == "proxy") {
-                            //'--proxy-server=103.90.230.170:9043'
+                    if (slave_info.network == "proxy") {
+                        //'--proxy-server=103.90.230.170:9043'
 
-                            let proxy_for_slave = "--proxy-server=" + proxy.proxy_ip + ":" + proxy.proxy_port
-                            param.push(proxy_for_slave)
-                            param.push('--ignore-certificate-errors')
-                        }
+                        let proxy_for_slave = "--proxy-server=" + proxy.proxy_ip + ":" + proxy.proxy_port
+                        param.push(proxy_for_slave)
+                        param.push('--ignore-certificate-errors')
+                    }
 
-                        const browser = await puppeteer.launch({
-                            //executablePath: chromiumDir,
-                            headless: headless_mode,
-                            devtools: false,
-                            args: param
+                    const browser = await puppeteer.launch({
+                        //executablePath: chromiumDir,
+                        headless: headless_mode,
+                        devtools: false,
+                        args: param
+                    });
+
+                    const page = (await browser.pages())[0];
+                    if (!user.user_agent) {
+                        userAgent = randomUseragent.getRandom(function (ua) {
+
+                            return (ua.osName === 'Windows' && ua.osVersion === "10");
                         });
+                    } else {
+                        userAgent = user.user_agent
+                    }
 
-                        const page = (await browser.pages())[0];
-                        if (!user.user_agent) {
-                            userAgent = randomUseragent.getRandom(function (ua) {
+                    await page.setUserAgent(userAgent)
 
-                                return (ua.osName === 'Windows' && ua.osVersion === "10");
-                            });
-                        } else {
-                            userAgent = user.user_agent
+                    // Random kích cỡ màn hình
+                    width = Math.floor(Math.random() * (1280 - 1000)) + 1000;;
+                    height = Math.floor(Math.random() * (800 - 600)) + 600;;
+
+                    await page.setViewport({
+                        width: width,
+                        height: height
+                    });
+                    if (slave_info.network == "proxy") {
+                        let proxy_pass = proxy.proxy_password.split("\r")[0]
+                        console.log(" proxxy ip: " + proxy.proxy_ip + ":" + proxy.proxy_port + ":" + proxy.proxy_username + ":" + proxy_pass)
+                        await page.authenticate({ username: proxy.proxy_username, password: proxy_pass });
+                    }
+                    try {
+                        if (user.cookie.length) {
+                            let cookie111 = JSON.parse(user.cookie)
+                            //console.log(cookie111)
+                            cookie111.forEach(async (item) => {
+                                await page.setCookie(item);
+                            })
                         }
+                    } catch (e) {
+                        console.log(" ---- Không có coookie ----")
+                    }
 
-                        await page.setUserAgent(userAgent)
+                    await page.setRequestInterception(true);
 
-                        // Random kích cỡ màn hình
-                        width = Math.floor(Math.random() * (1280 - 1000)) + 1000;;
-                        height = Math.floor(Math.random() * (800 - 600)) + 600;;
-
-                        await page.setViewport({
-                            width: width,
-                            height: height
-                        });
-                        if (slave_info.network == "proxy") {
-                            let proxy_pass = proxy.proxy_password.split("\r")[0]
-                            console.log(" proxxy ip: " + proxy.proxy_ip + ":" + proxy.proxy_port + ":" + proxy.proxy_username + ":" + proxy_pass)
-                            await page.authenticate({ username: proxy.proxy_username, password: proxy_pass });
-                        }
-                        try {
-                            if (user.cookie.length) {
-                                let cookie111 = JSON.parse(user.cookie)
-                                //console.log(cookie111)
-                                cookie111.forEach(async (item) => {
-                                    await page.setCookie(item);
-                                })
-                            }
-                        } catch (e) {
-                            console.log(" ---- Không có coookie ----")
-                        }
-    
+                    if (disable_css == 1 || disable_image == 1) {
                         await page.setRequestInterception(true);
-    
-                        if (disable_css == 1 || disable_image == 1) {
-                            await page.setRequestInterception(true);
-    
-                            // --- Chặn load css --- /
-                            if (disable_image == 1) {
-                                page.on('request', (req) => {
-                                    if (req.resourceType() === 'image') {
-                                        req.abort();
-                                    } else {
-                                        req.continue();
-                                    }
-    
-                                    // if (req.resourceType() === 'stylesheet' || req.resourceType() === 'font' || req.resourceType() === 'image') {
-                                    //     req.abort();
-                                    // } else {
-                                    //     req.continue();
-                                    // }
-    
-                                });
-                            }
-                        }
-                        try {
-                            if ((index == 0) && (mode !== "DEV")) {
-                                // đổi ip
-                                console.log("Đổi ip mạng")
-                                if (dcomVersion == "V2") {
-                                    // await changeIpDcomV2()
+
+                        // --- Chặn load css --- /
+                        if (disable_image == 1) {
+                            page.on('request', (req) => {
+                                if (req.resourceType() === 'image') {
+                                    req.abort();
                                 } else {
-                                    await page.goto("http://192.168.8.1/html/home.html")
-                                    //  timeout = Math.floor(Math.random() * (2000 - 1000)) + 1000;
-                                    //   await page.waitForTimeout(timeout)
-                                    checkDcom = await page.$$(".mobile_connect_btn_on")
+                                    req.continue();
+                                }
 
-                                    //   process.exit()
-                                    if (checkDcom.length) {
+                                // if (req.resourceType() === 'stylesheet' || req.resourceType() === 'font' || req.resourceType() === 'image') {
+                                //     req.abort();
+                                // } else {
+                                //     req.continue();
+                                // }
+
+                            });
+                        }
+                    }
+                    try {
+                        if ((index == 0) && (mode !== "DEV")) {
+                            // đổi ip
+                            console.log("Đổi ip mạng")
+                            if (dcomVersion == "V2") {
+                                // await changeIpDcomV2()
+                            } else {
+                                await page.goto("http://192.168.8.1/html/home.html")
+                                //  timeout = Math.floor(Math.random() * (2000 - 1000)) + 1000;
+                                //   await page.waitForTimeout(timeout)
+                                checkDcom = await page.$$(".mobile_connect_btn_on")
+
+                                //   process.exit()
+                                if (checkDcom.length) {
+                                    await page.click("#mobile_connect_btn")
+                                    timeout = Math.floor(Math.random() * (4000 - 3000)) + 3000;
+                                    await page.waitForTimeout(timeout)
+
+                                    // turn on dcom
+                                    checkDcomOff = await page.$$(".mobile_connect_btn_on")
+                                    if (!checkDcomOff.length) {
                                         await page.click("#mobile_connect_btn")
-                                        timeout = Math.floor(Math.random() * (4000 - 3000)) + 3000;
-                                        await page.waitForTimeout(timeout)
-
-                                        // turn on dcom
-                                        checkDcomOff = await page.$$(".mobile_connect_btn_on")
-                                        if (!checkDcomOff.length) {
-                                            await page.click("#mobile_connect_btn")
-                                            timeout = Math.floor(Math.random() * (2000 - 1000)) + 2000;
-                                            await page.waitForTimeout(timeout)
-                                        }
-                                    }
-
-                                    if (!checkDcom.length) {
-                                        console.log("DCOM V2")
-                                        checkDcomOff = await page.$$("#disconnect_btn")
-                                        await page.click("#disconnect_btn")
-                                        timeout = Math.floor(Math.random() * (2000 - 1000)) + 1000;
-                                        await page.waitForTimeout(timeout)
-
-                                        // turn on dcom
-                                        //checkDcomOff = await page.$$("#connect_btn")
-                                        checkDcomOff = await page.waitForSelector("#connect_btn")
-                                        await page.click("#connect_btn")
                                         timeout = Math.floor(Math.random() * (2000 - 1000)) + 2000;
                                         await page.waitForTimeout(timeout)
                                     }
                                 }
-                            }
 
-                            //  timeout = Math.floor(Math.random() * (7000 - 5000)) + 5000;
-                            await page.waitForTimeout(10000)
+                                if (!checkDcom.length) {
+                                    console.log("DCOM V2")
+                                    checkDcomOff = await page.$$("#disconnect_btn")
+                                    await page.click("#disconnect_btn")
+                                    timeout = Math.floor(Math.random() * (2000 - 1000)) + 1000;
+                                    await page.waitForTimeout(timeout)
+
+                                    // turn on dcom
+                                    //checkDcomOff = await page.$$("#connect_btn")
+                                    checkDcomOff = await page.waitForSelector("#connect_btn")
+                                    await page.click("#connect_btn")
+                                    timeout = Math.floor(Math.random() * (2000 - 1000)) + 2000;
+                                    await page.waitForTimeout(timeout)
+                                }
+                            }
+                        }
+
+                        //  timeout = Math.floor(Math.random() * (7000 - 5000)) + 5000;
+                        await page.waitForTimeout(10000)
+                        try {
+                            await page.goto("https://shopee.vn")
+                        } catch (error) {
+                            console.log("Mạng chậm không kết nối dc")
+                            return false
+                        }
+
+                        timeout = Math.floor(Math.random() * (3000 - 2000)) + 2000;
+                        await page.waitForTimeout(timeout)
+
+                        // login account shopee                    
+                        let checklogin = await loginShopee(page, user)
+                        console.log(" --- Check login = " + checklogin)
+
+                        if (checklogin == true) {
+                            console.log("---------- san pham pho bien ----------")
+
+                            populateClick(page, listcategories)
+
+                            // lấy danh sách product đã lưu
+                            var saveProduct = fs.readFileSync("saveProduct.txt", { flag: "as+" });
+                            saveProduct = saveProduct.toString();
+                            saveProduct = saveProduct.split("\n")
+
+                            // danh sách product không nằm trong file saveproduct.txt
+
+                            //lấy danh sách product thuộc các id shop của cùng 1 người dùng                   
+                            let productInfo = await getproduct(page, saveProduct, 10, idShopsfull)
+
+                            if (productInfo) {
+                                fs.appendFileSync('saveProduct.txt', productInfo.id + "\n")
+                                var today = new Date().toLocaleString();
+                                productInfo.keyword = "Sản phẩm phổ biến"
+                                productInfo.time = today
+                                productInfo.user = user.username
+                                productInfo.pass = user.password
+                                // lưu thứ hạng sản phẩm theo từ khoá vào file
+                                fs.appendFileSync('thuhang.txt', "\n" + JSON.stringify(productInfo, null, 4))
+                                try {
+                                    let datatest = await axios.get(linkShopeeUpdate, {
+                                        params: {
+                                            data: {
+                                                dataToServer: productInfo,
+                                            }
+                                        }
+                                    })
+                                    console.log(datatest.data)
+                                } catch (error) {
+                                    console.log(error)
+                                    //console.log("Không gửi được dữ liệu thứ hạng mới đến master")
+                                }
+
+                                let products = await page.$$('[data-sqe="link"]')
+                                if (productInfo.vitri > 4 && productInfo.vitri < 45) {
+                                    products[productInfo.vitri].click()
+                                    timeout = Math.floor(Math.random() * (5000 - 3000)) + 3000
+                                    await page.waitForTimeout(timeout)
+                                    let productLink = await page.url()
+                                    await actionShopee(page)
+                                    await page.waitForTimeout(1000);
+
+                                    if (productInfo.randomOrder >= 1) {
+                                        let randomOrder = Math.floor(Math.random() * (productInfo.randomOrder + 1))
+                                        if (randomOrder % productInfo.randomOrder == 0) {
+                                            //    await orderProduct(page, productInfo)
+                                        }
+                                    }
+
+                                    if (lienQuan != 1) {
+                                        await viewShop(page, productLink)
+                                    }
+                                    await removeCart(page)
+                                }
+
+                            } else {
+                                // nếu đã check hết product sẽ xoá file saveProduct.txt                                
+                                saveProduct = [];
+                                fs.writeFileSync('saveProduct.txt', saveProduct)
+
+                            }
+                            await browser.close();
+                        }
+
+                        if (checklogin == 2) {
+
+                            accountInfo = {
+                                user: user.username,
+                                pass: user.password,
+                                status: 0,
+                                message: "Account bị khoá"
+                            }
                             try {
-                                await page.goto("https://shopee.vn")
+                                await axios.post(linkShopeeAccountUpdate, {
+                                    data: accountInfo,
+                                    timeout: 50000
+                                },
+                                    {
+                                        headers: {
+                                            Connection: 'keep-alive',
+                                            'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36'
+                                        }
+                                    })
+                                    .then(function (response) {
+                                        console.log("Update action: " + " " + response.data);
+                                    })
+                                    .catch(function (error) {
+                                        console.log(error);
+                                    });
                             } catch (error) {
-                                console.log("Mạng chậm không kết nối dc")
-                                return false
+                                console.log(error)
+                                //console.log("Không gửi được dữ liệu thứ hạng mới đến master")
                             }
+                            await browser.close();
 
-                            timeout = Math.floor(Math.random() * (3000 - 2000)) + 2000;
-                            await page.waitForTimeout(timeout)
+                        }
 
-                            // login account shopee                    
-                            let checklogin = await loginShopee(page, user)
-                            console.log(" --- Check login = " + checklogin)
+                    } catch (error) {
+                        console.log(error)
+                        await browser.close();
+                    }
+                    await browser.close();
+                    await deleteProfile(user.username)
+                    console.log("----------- STOP PHO BIEN---------------")
+                }
 
-                            if (checklogin == true) {
-                                console.log("---------- san pham pho bien ----------")
+                if (slave_info.type == "seo_top") {
 
-                                populateClick(page, listcategories)
+                    console.log("----------- CLICK ALL SẢN PHẨM ---------------")
+
+                    let profileChrome = profileDir + user.username
+                    console.log("Profile chrome link: " + profileChrome)
+                    let param = [
+                        `--user-data-dir=${profileChrome}`,      // load profile chromium
+                        '--disable-gpu',
+                        '--no-sandbox',
+                        '--lang=en-US',
+                        '--disable-setuid-sandbox',
+                        '--disable-dev-shm-usage',
+                        '--disable-background-timer-throttling',
+                        '--disable-backgrounding-occluded-windows',
+                        '--disable-renderer-backgrounding',
+                        '--disable-dev-shm-usage',
+                        '--disable-accelerated-2d-canvas',
+                        '--no-first-run',
+                    ]
+
+                    if (slave_info.network == "proxy") {
+                        //'--proxy-server=103.90.230.170:9043'
+
+                        let proxy_for_slave = "--proxy-server=" + proxy.proxy_ip + ":" + proxy.proxy_port
+                        param.push(proxy_for_slave)
+                        param.push('--ignore-certificate-errors')
+                    }
+
+                    const browser = await puppeteer.launch({
+                        //executablePath: chromiumDir,
+                        headless: headless_mode,
+                        devtools: false,
+                        args: param
+                    });
+
+                    const page = (await browser.pages())[0];
+                    if (!user.user_agent) {
+                        userAgent = randomUseragent.getRandom(function (ua) {
+
+                            return (ua.osName === 'Windows' && ua.osVersion === "10");
+                        });
+                    } else {
+                        userAgent = user.user_agent
+                    }
+                    await page.setUserAgent(userAgent)
+                    console.log(userAgent)
+                    // Random kích cỡ màn hình
+                    width = Math.floor(Math.random() * (1280 - 1000)) + 1000;;
+                    height = Math.floor(Math.random() * (800 - 600)) + 600;;
+
+                    await page.setViewport({
+                        width: width,
+                        height: height
+                    });
+
+                    if (slave_info.network == "proxy") {
+                        let proxy_pass = proxy.proxy_password.split("\r")[0]
+                        console.log(" proxxy ip: " + proxy.proxy_ip + ":" + proxy.proxy_port + ":" + proxy.proxy_username + ":" + proxy_pass)
+                        await page.authenticate({ username: proxy.proxy_username, password: proxy_pass });
+                    }
+                    try {
+                        if (user.cookie.length) {
+                            let cookie111 = JSON.parse(user.cookie)
+                            //console.log(cookie111)
+                            cookie111.forEach(async (item) => {
+                                await page.setCookie(item);
+                            })
+                        }
+                    } catch (e) {
+                        console.log(" ---- Không có coookie ----")
+                    }
+
+                    await page.setRequestInterception(true);
+
+                    if (disable_css == 1 || disable_image == 1) {
+                        await page.setRequestInterception(true);
+
+                        // --- Chặn load css --- /
+                        if (disable_image == 1) {
+                            page.on('request', (req) => {
+                                if (req.resourceType() === 'image') {
+                                    req.abort();
+                                } else {
+                                    req.continue();
+                                }
+
+                                // if (req.resourceType() === 'stylesheet' || req.resourceType() === 'font' || req.resourceType() === 'image') {
+                                //     req.abort();
+                                // } else {
+                                //     req.continue();
+                                // }
+
+                            });
+                        }
+                    }
+                    try {
+                        if ((index == 0) && (mode !== "DEV")) {
+                            // đổi ip
+                            console.log("Đổi ip mạng")
+                            if (dcomVersion == "V2") {
+                                // await changeIpDcomV2()
+                            } else {
+                                await page.goto("http://192.168.8.1/html/home.html")
+                                //  timeout = Math.floor(Math.random() * (2000 - 1000)) + 1000;
+                                //   await page.waitForTimeout(timeout)
+                                let checkDcom = await page.$$(".mobile_connect_btn_on")
+
+                                //   process.exit()
+                                if (checkDcom.length) {
+                                    await page.click("#mobile_connect_btn")
+                                    timeout = Math.floor(Math.random() * (4000 - 3000)) + 3000;
+                                    await page.waitForTimeout(timeout)
+
+                                    // turn on dcom
+                                    checkDcomOff = await page.$$(".mobile_connect_btn_on")
+                                    if (!checkDcomOff.length) {
+                                        await page.click("#mobile_connect_btn")
+                                        timeout = Math.floor(Math.random() * (2000 - 1000)) + 2000;
+                                        await page.waitForTimeout(timeout)
+                                    }
+                                }
+
+                                if (!checkDcom.length) {
+                                    console.log("DCOM V2")
+                                    checkDcomOff = await page.$$("#disconnect_btn")
+                                    await page.click("#disconnect_btn")
+                                    timeout = Math.floor(Math.random() * (2000 - 1000)) + 1000;
+                                    await page.waitForTimeout(timeout)
+
+                                    // turn on dcom
+                                    //checkDcomOff = await page.$$("#connect_btn")
+                                    checkDcomOff = await page.waitForSelector("#connect_btn")
+                                    await page.click("#connect_btn")
+                                    timeout = Math.floor(Math.random() * (2000 - 1000)) + 2000;
+                                    await page.waitForTimeout(timeout)
+                                }
+                            }
+                        }
+
+                        //  timeout = Math.floor(Math.random() * (7000 - 5000)) + 5000;
+                        await page.waitForTimeout(10000)
+                        await page.goto("https://shopee.vn")
+                        timeout = Math.floor(Math.random() * (3000 - 2000)) + 2000;
+                        await page.waitForTimeout(timeout)
+
+                        // login account shopee                    
+                        let checklogin = await loginShopee(page, user)
+                        console.log(" --- Check login = " + checklogin)
+                        if (checklogin == 2) {
+                            accountInfo = {
+                                user: user.username,
+                                pass: user.password,
+                                status: 0,
+                                message: "Account bị khoá"
+                            }
+                            try {
+                                await axios.post(linkShopeeAccountUpdate, {
+                                    data: accountInfo,
+                                    timeout: 50000
+                                },
+                                    {
+                                        headers: {
+                                            Connection: 'keep-alive',
+                                            'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36'
+                                        }
+                                    })
+                                    .then(function (response) {
+                                        console.log("Update action: " + " " + response.data);
+                                    })
+                                    .catch(function (error) {
+                                        console.log(error);
+                                    });
+                            } catch (error) {
+                                console.log(error)
+                                //console.log("Không gửi được dữ liệu thứ hạng mới đến master")
+                            }
+                            await browser.close();
+
+                        }
+                        if (checklogin == true) {
+                            if (slave_info.type == "seo_top") {
+                                keywords = products = dataShopee.products
+                                console.log("----- Click theo sản phẩm -----")
+
+                                // Server trả về dữ liệu sắp xếp theo số lượng lượt tìm kiếm từ nhỏ đến lớn
+                                // server check tài khoản còn tiền để sử dụng không
+
+                                // Chọn 1 từ khoá có số lượng tìm kiếm thấp nhất
+                                let product
+                                if (index < products.length) {
+                                    product = products[index];
+                                } else {
+                                    product = products[0];
+                                }
+
+                                console.log(product)
+                                await searchKeyWord(page, product.keyword)
+                                // Check vị trí sản phẩm theo page, index
+                                // search lần đầu , search lần 2, 
+                                let productInfo = await getproductByProductId(page, product)
+                                // if(product.product_page == null || product.product_page == "Not"){
+                                //     productInfo = await getproductByProductId(page, product)
+                                // }else{
+                                //     productInfo = await getproductByOldIndex(page, product)
+                                // }
+                                console.log(productInfo)
+                                if ((productInfo.vitri != "Not")) {
+                                    today = new Date().toLocaleString();
+                                    productInfo.keyword = product.keyword
+                                    productInfo.time = today
+                                    productInfo.user = user[0]
+                                    //productInfo.pass = key[1]
+
+                                    try {
+                                        let datatest = await axios.get(shopeeUpdateSeoSanPhamDir, {
+                                            params: {
+                                                data: {
+                                                    dataToServer: productInfo,
+                                                }
+                                            }
+                                        })
+                                        console.log(datatest.data)
+                                    } catch (error) {
+                                        console.log("Không gửi được dữ liệu thứ hạng mới đến server")
+                                        console.log(error)
+                                    }
+
+                                    products_page = await page.$$('[data-sqe="link"]')
+
+                                    if (productInfo.vitri > 4 && productInfo.vitri < 45) {
+                                        products_page[productInfo.vitri].click()
+                                        await actionShopee(page)
+                                        if (productInfo.randomOrder >= 1) {
+                                            // Đặt hàng
+                                            let randomOrder = Math.floor(Math.random() * (productInfo.randomOrder + 1))
+                                            if (randomOrder % productInfo.randomOrder == 0) {
+                                                //    await orderProduct(page, productInfo)
+                                            }
+                                        }
+                                        await page.waitForTimeout(1000);
+                                        await removeCart(page)
+                                    }
+
+                                } else {
+                                    console.log("Không tìm thấy sản phẩm")
+                                }
+
+                            } else {
+                                var saveKeyword = fs.readFileSync("saveKeyword.txt", { flag: "as+" });
+                                saveKeyword = saveKeyword.toString();
+                                saveKeyword = saveKeyword.split("\n")
+                                if (saveKeyword.length >= keywords.length) {
+                                    saveKeyword = [];
+                                    fs.writeFileSync('saveKeyword.txt', saveKeyword.toString())
+                                }
+
+                                // danh sách keyword không nằm trong file savekeyword.txt
+                                let keywordNotSave = []
+                                keywords.forEach(item => {
+                                    if (!saveKeyword.includes(item)) {             // Tìm id đó trong file saveid. nếu chưa có thì lưu vào mảng id chưa tương tác idnotsave[]
+                                        keywordNotSave.push(item);
+                                    }
+                                })
+                                // lấy ngẫu nhiên keyword để tìm kiếm
+                                randomkey = Math.floor(Math.random() * (keywordNotSave.length - 1));
+
+                                // lưu keyword sẽ tìm vào file saveKeyword.txt
+                                fs.appendFileSync('saveKeyword.txt', keywordNotSave[randomkey] + "\n")
+                                // tìm kiếm theo keyword
+                                await searchKeyWord(page, keywordNotSave[randomkey])
 
                                 // lấy danh sách product đã lưu
                                 var saveProduct = fs.readFileSync("saveProduct.txt", { flag: "as+" });
@@ -2389,18 +2765,18 @@ runAllTime = async () => {
 
                                 // danh sách product không nằm trong file saveproduct.txt
 
-                                //lấy danh sách product thuộc các id shop của cùng 1 người dùng                   
-                                let productInfo = await getproduct(page, saveProduct, 10, idShopsfull)
+                                productInfo = await getproduct(page, saveProduct, 10, idShopsfull)
 
                                 if (productInfo) {
+                                    today = new Date().toLocaleString();
                                     fs.appendFileSync('saveProduct.txt', productInfo.id + "\n")
-                                    var today = new Date().toLocaleString();
-                                    productInfo.keyword = "Sản phẩm phổ biến"
+                                    productInfo.keyword = keywordNotSave[randomkey]
                                     productInfo.time = today
                                     productInfo.user = user.username
                                     productInfo.pass = user.password
                                     // lưu thứ hạng sản phẩm theo từ khoá vào file
                                     fs.appendFileSync('thuhang.txt', "\n" + JSON.stringify(productInfo, null, 4))
+
                                     try {
                                         let datatest = await axios.get(linkShopeeUpdate, {
                                             params: {
@@ -2411,423 +2787,45 @@ runAllTime = async () => {
                                         })
                                         console.log(datatest.data)
                                     } catch (error) {
-                                        console.log(error)
-                                        //console.log("Không gửi được dữ liệu thứ hạng mới đến master")
+                                        console.log("Không gửi được dữ liệu thứ hạng mới đến")
                                     }
 
-                                    let products = await page.$$('[data-sqe="link"]')
+                                    let products_page = await page.$$('[data-sqe="link"]')
                                     if (productInfo.vitri > 4 && productInfo.vitri < 45) {
-                                        products[productInfo.vitri].click()
+                                        products_page[productInfo.vitri].click()
                                         timeout = Math.floor(Math.random() * (5000 - 3000)) + 3000
                                         await page.waitForTimeout(timeout)
-                                        let productLink = await page.url()
+                                        productLink = await page.url()
                                         await actionShopee(page)
                                         await page.waitForTimeout(1000);
 
                                         if (productInfo.randomOrder >= 1) {
-                                            let randomOrder = Math.floor(Math.random() * (productInfo.randomOrder + 1))
+                                            // Đặt hàng
+                                            randomOrder = Math.floor(Math.random() * (productInfo.randomOrder + 1))
                                             if (randomOrder % productInfo.randomOrder == 0) {
                                                 //    await orderProduct(page, productInfo)
                                             }
-                                        }
 
-                                        if (lienQuan != 1) {
-                                            await viewShop(page, productLink)
                                         }
+                                        await viewShop(page, productLink)
                                         await removeCart(page)
                                     }
-
                                 } else {
                                     // nếu đã check hết product sẽ xoá file saveProduct.txt                                
                                     saveProduct = [];
-                                    fs.writeFileSync('saveProduct.txt', saveProduct)
+                                    fs.writeFileSync('saveProduct.txt', saveProduct.toString())
 
                                 }
-                                await browser.close();
                             }
-
-                            if (checklogin == 2) {
-
-                                accountInfo = {
-                                    user: user.username,
-                                    pass: user.password,
-                                    status: 0,
-                                    message: "Account bị khoá"
-                                }
-                                try {
-                                    await axios.post(linkShopeeAccountUpdate, {
-                                        data: accountInfo,
-                                        timeout: 50000
-                                    },
-                                        {
-                                            headers: {
-                                                Connection: 'keep-alive',
-                                                'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36'
-                                            }
-                                        })
-                                        .then(function (response) {
-                                            console.log("Update action: " + " " + response.data);
-                                        })
-                                        .catch(function (error) {
-                                            console.log(error);
-                                        });
-                                } catch (error) {
-                                    console.log(error)
-                                    //console.log("Không gửi được dữ liệu thứ hạng mới đến master")
-                                }
-                                await browser.close();
-                               
-                            }
-
-                        } catch (error) {
-                            console.log(error)
                             await browser.close();
                         }
-                        await browser.close();
-                        await deleteProfile(user.username)
-                        console.log("----------- STOP PHO BIEN---------------")
-                    } 
-                    
-                    if (slave_info.type == "seo_top") {
-
-                        console.log("----------- CLICK ALL SẢN PHẨM ---------------")
-
-                        let profileChrome = profileDir + user.username
-                        console.log("Profile chrome link: " + profileChrome)
-                        let param = [
-                            `--user-data-dir=${profileChrome}`,      // load profile chromium
-                            '--disable-gpu',
-                            '--no-sandbox',
-                            '--lang=en-US',
-                            '--disable-setuid-sandbox',
-                            '--disable-dev-shm-usage',
-                            '--disable-background-timer-throttling',
-                            '--disable-backgrounding-occluded-windows',
-                            '--disable-renderer-backgrounding',
-                            '--disable-dev-shm-usage',
-                            '--disable-accelerated-2d-canvas',
-                            '--no-first-run',
-                        ]
-
-                        if (slave_info.network == "proxy") {
-                            //'--proxy-server=103.90.230.170:9043'
-
-                            let proxy_for_slave = "--proxy-server=" + proxy.proxy_ip + ":" + proxy.proxy_port
-                            param.push(proxy_for_slave)
-                            param.push('--ignore-certificate-errors')
-                        }
-
-                        const browser = await puppeteer.launch({
-                            //executablePath: chromiumDir,
-                            headless: headless_mode,
-                            devtools: false,
-                            args: param
-                        });
-
-                        const page = (await browser.pages())[0];
-                        if (!user.user_agent) {
-                            userAgent = randomUseragent.getRandom(function (ua) {
-
-                                return (ua.osName === 'Windows' && ua.osVersion === "10");
-                            });
-                        } else {
-                            userAgent = user.user_agent
-                        }
-                        await page.setUserAgent(userAgent)
-                        console.log(userAgent)
-                        // Random kích cỡ màn hình
-                        width = Math.floor(Math.random() * (1280 - 1000)) + 1000;;
-                        height = Math.floor(Math.random() * (800 - 600)) + 600;;
-
-                        await page.setViewport({
-                            width: width,
-                            height: height
-                        });
-
-                        if (slave_info.network == "proxy") {
-                            let proxy_pass = proxy.proxy_password.split("\r")[0]
-                            console.log(" proxxy ip: " + proxy.proxy_ip + ":" + proxy.proxy_port + ":" + proxy.proxy_username + ":" + proxy_pass)
-                            await page.authenticate({ username: proxy.proxy_username, password: proxy_pass });
-                        }
-                        try {
-                            if (user.cookie.length) {
-                                let cookie111 = JSON.parse(user.cookie)
-                                //console.log(cookie111)
-                                cookie111.forEach(async (item) => {
-                                    await page.setCookie(item);
-                                })
-                            }
-                        } catch (e) {
-                            console.log(" ---- Lỗi set coookie ----")
-                        }
-    
-                        await page.setRequestInterception(true);
-    
-                        if (disable_css == 1 || disable_image == 1) {
-                            await page.setRequestInterception(true);
-    
-                            // --- Chặn load css --- /
-                            if (disable_image == 1) {
-                                page.on('request', (req) => {
-                                    if (req.resourceType() === 'image') {
-                                        req.abort();
-                                    } else {
-                                        req.continue();
-                                    }
-    
-                                    // if (req.resourceType() === 'stylesheet' || req.resourceType() === 'font' || req.resourceType() === 'image') {
-                                    //     req.abort();
-                                    // } else {
-                                    //     req.continue();
-                                    // }
-    
-                                });
-                            }
-                        }
-                        try {
-                            if ((index == 0) && (mode !== "DEV")) {
-                                // đổi ip
-                                console.log("Đổi ip mạng")
-                                if (dcomVersion == "V2") {
-                                    // await changeIpDcomV2()
-                                } else {
-                                    await page.goto("http://192.168.8.1/html/home.html")
-                                    //  timeout = Math.floor(Math.random() * (2000 - 1000)) + 1000;
-                                    //   await page.waitForTimeout(timeout)
-                                    let checkDcom = await page.$$(".mobile_connect_btn_on")
-
-                                    //   process.exit()
-                                    if (checkDcom.length) {
-                                        await page.click("#mobile_connect_btn")
-                                        timeout = Math.floor(Math.random() * (4000 - 3000)) + 3000;
-                                        await page.waitForTimeout(timeout)
-
-                                        // turn on dcom
-                                        checkDcomOff = await page.$$(".mobile_connect_btn_on")
-                                        if (!checkDcomOff.length) {
-                                            await page.click("#mobile_connect_btn")
-                                            timeout = Math.floor(Math.random() * (2000 - 1000)) + 2000;
-                                            await page.waitForTimeout(timeout)
-                                        }
-                                    }
-
-                                    if (!checkDcom.length) {
-                                        console.log("DCOM V2")
-                                        checkDcomOff = await page.$$("#disconnect_btn")
-                                        await page.click("#disconnect_btn")
-                                        timeout = Math.floor(Math.random() * (2000 - 1000)) + 1000;
-                                        await page.waitForTimeout(timeout)
-
-                                        // turn on dcom
-                                        //checkDcomOff = await page.$$("#connect_btn")
-                                        checkDcomOff = await page.waitForSelector("#connect_btn")
-                                        await page.click("#connect_btn")
-                                        timeout = Math.floor(Math.random() * (2000 - 1000)) + 2000;
-                                        await page.waitForTimeout(timeout)
-                                    }
-                                }
-                            }
-
-                            //  timeout = Math.floor(Math.random() * (7000 - 5000)) + 5000;
-                            await page.waitForTimeout(10000)
-                            await page.goto("https://shopee.vn")
-                            timeout = Math.floor(Math.random() * (3000 - 2000)) + 2000;
-                            await page.waitForTimeout(timeout)
-
-                            // login account shopee                    
-                            let checklogin = await loginShopee(page, user)
-                            console.log(" --- Check login = " + checklogin)
-                            if (checklogin == 2) {
-                                accountInfo = {
-                                    user: user.username,
-                                    pass: user.password,
-                                    status: 0,
-                                    message: "Account bị khoá"
-                                }
-                                try {
-                                    await axios.post(linkShopeeAccountUpdate, {
-                                        data: accountInfo,
-                                        timeout: 50000
-                                    },
-                                        {
-                                            headers: {
-                                                Connection: 'keep-alive',
-                                                'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36'
-                                            }
-                                        })
-                                        .then(function (response) {
-                                            console.log("Update action: " + " " + response.data);
-                                        })
-                                        .catch(function (error) {
-                                            console.log(error);
-                                        });
-                                } catch (error) {
-                                    console.log(error)
-                                    //console.log("Không gửi được dữ liệu thứ hạng mới đến master")
-                                }
-                                await browser.close();
-                               
-                            }
-                            if (checklogin == true) {
-                                if (slave_info.type == "seo_top") {
-                                    keywords = products = dataShopee.products
-                                    console.log("----- Click theo sản phẩm -----")
-
-                                    // Server trả về dữ liệu sắp xếp theo số lượng lượt tìm kiếm từ nhỏ đến lớn
-                                    // server check tài khoản còn tiền để sử dụng không
-
-                                    // Chọn 1 từ khoá có số lượng tìm kiếm thấp nhất
-                                    let product
-                                    if (index < products.length) {
-                                        product = products[index];
-                                    } else {
-                                        product = products[0];
-                                    }
-
-                                    console.log(product)
-                                    await searchKeyWord(page, product.keyword)
-                                    // Check vị trí sản phẩm theo page, index
-                                    // search lần đầu , search lần 2, 
-                                    let productInfo = await getproductByProductId(page, product)
-                                    // if(product.product_page == null || product.product_page == "Not"){
-                                    //     productInfo = await getproductByProductId(page, product)
-                                    // }else{
-                                    //     productInfo = await getproductByOldIndex(page, product)
-                                    // }
-                                    console.log(productInfo)
-                                    if ((productInfo.vitri != "Not")) {
-                                        today = new Date().toLocaleString();
-                                        productInfo.keyword = product.keyword
-                                        productInfo.time = today
-                                        productInfo.user = user[0]
-                                        //productInfo.pass = key[1]
-
-                                        try {
-                                            let datatest = await axios.get(shopeeUpdateSeoSanPhamDir, {
-                                                params: {
-                                                    data: {
-                                                        dataToServer: productInfo,
-                                                    }
-                                                }
-                                            })
-                                            console.log(datatest.data)
-                                        } catch (error) {
-                                            console.log("Không gửi được dữ liệu thứ hạng mới đến server")
-                                            console.log(error)
-                                        }
-
-                                        products_page = await page.$$('[data-sqe="link"]')
-
-                                        if (productInfo.vitri > 4 && productInfo.vitri < 45) {
-                                            products_page[productInfo.vitri].click()
-                                            await actionShopee(page)
-                                            if (productInfo.randomOrder >= 1) {
-                                                // Đặt hàng
-                                                let randomOrder = Math.floor(Math.random() * (productInfo.randomOrder + 1))
-                                                if (randomOrder % productInfo.randomOrder == 0) {
-                                                    //    await orderProduct(page, productInfo)
-                                                }
-                                            }
-                                            await page.waitForTimeout(1000);
-                                            await removeCart(page)
-                                        }
-
-                                    } else {
-                                        console.log("Không tìm thấy sản phẩm")
-                                    }
-
-                                } else {
-                                    var saveKeyword = fs.readFileSync("saveKeyword.txt", { flag: "as+" });
-                                    saveKeyword = saveKeyword.toString();
-                                    saveKeyword = saveKeyword.split("\n")
-                                    if (saveKeyword.length >= keywords.length) {
-                                        saveKeyword = [];
-                                        fs.writeFileSync('saveKeyword.txt', saveKeyword.toString())
-                                    }
-
-                                    // danh sách keyword không nằm trong file savekeyword.txt
-                                    let keywordNotSave = []
-                                    keywords.forEach(item => {
-                                        if (!saveKeyword.includes(item)) {             // Tìm id đó trong file saveid. nếu chưa có thì lưu vào mảng id chưa tương tác idnotsave[]
-                                            keywordNotSave.push(item);
-                                        }
-                                    })
-                                    // lấy ngẫu nhiên keyword để tìm kiếm
-                                    randomkey = Math.floor(Math.random() * (keywordNotSave.length - 1));
-
-                                    // lưu keyword sẽ tìm vào file saveKeyword.txt
-                                    fs.appendFileSync('saveKeyword.txt', keywordNotSave[randomkey] + "\n")
-                                    // tìm kiếm theo keyword
-                                    await searchKeyWord(page, keywordNotSave[randomkey])
-
-                                    // lấy danh sách product đã lưu
-                                    var saveProduct = fs.readFileSync("saveProduct.txt", { flag: "as+" });
-                                    saveProduct = saveProduct.toString();
-                                    saveProduct = saveProduct.split("\n")
-
-                                    // danh sách product không nằm trong file saveproduct.txt
-
-                                    productInfo = await getproduct(page, saveProduct, 10, idShopsfull)
-
-                                    if (productInfo) {
-                                        today = new Date().toLocaleString();
-                                        fs.appendFileSync('saveProduct.txt', productInfo.id + "\n")
-                                        productInfo.keyword = keywordNotSave[randomkey]
-                                        productInfo.time = today
-                                        productInfo.user = user.username
-                                        productInfo.pass = user.password
-                                        // lưu thứ hạng sản phẩm theo từ khoá vào file
-                                        fs.appendFileSync('thuhang.txt', "\n" + JSON.stringify(productInfo, null, 4))
-
-                                        try {
-                                            let datatest = await axios.get(linkShopeeUpdate, {
-                                                params: {
-                                                    data: {
-                                                        dataToServer: productInfo,
-                                                    }
-                                                }
-                                            })
-                                            console.log(datatest.data)
-                                        } catch (error) {
-                                            console.log("Không gửi được dữ liệu thứ hạng mới đến")
-                                        }
-
-                                        let products_page = await page.$$('[data-sqe="link"]')
-                                        if (productInfo.vitri > 4 && productInfo.vitri < 45) {
-                                            products_page[productInfo.vitri].click()
-                                            timeout = Math.floor(Math.random() * (5000 - 3000)) + 3000
-                                            await page.waitForTimeout(timeout)
-                                            productLink = await page.url()
-                                            await actionShopee(page)
-                                            await page.waitForTimeout(1000);
-
-                                            if (productInfo.randomOrder >= 1) {
-                                                // Đặt hàng
-                                                randomOrder = Math.floor(Math.random() * (productInfo.randomOrder + 1))
-                                                if (randomOrder % productInfo.randomOrder == 0) {
-                                                    //    await orderProduct(page, productInfo)
-                                                }
-
-                                            }
-                                            await viewShop(page, productLink)
-                                            await removeCart(page)
-                                        }
-                                    } else {
-                                        // nếu đã check hết product sẽ xoá file saveProduct.txt                                
-                                        saveProduct = [];
-                                        fs.writeFileSync('saveProduct.txt', saveProduct.toString())
-
-                                    }
-                                }
-                                await browser.close();
-                            }
-                        } catch (error) {
-                            console.log(error)
-                        }
-                        await browser.close();
-                        await deleteProfile(user.username)
-                        console.log("----------- STOP ---------------")
+                    } catch (error) {
+                        console.log(error)
                     }
+                    await browser.close();
+                    await deleteProfile(user.username)
+                    console.log("----------- STOP ---------------")
+                }
             })
         }
     } catch (error) {
