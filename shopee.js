@@ -1776,7 +1776,7 @@ runAllTime = async () => {
 
             if (checkNetwork == 1) {
                 console.log("connected");
-                //if (mode != "DEV") {
+                if (mode != "DEV") {
                 // Đổi MAC
 
                 await genRandomMac()
@@ -1784,7 +1784,7 @@ runAllTime = async () => {
                 await sleep(4000)
                 await connectDcomV2()
                 await sleep(10000)
-
+                }
             }
         }
 
