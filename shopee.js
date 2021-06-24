@@ -348,7 +348,7 @@ getproduct = async (page, saveProduct, limit, idShops) => {
         if (product_page2 == undefined) {
             product_page2 = 0
         }
-        page.removeAllListeners('response');
+        await page.removeAllListeners('response');
         await page.on('response', async (resp) => {
             let url = resp.url()
             let productInfo1, productInfo2
@@ -359,7 +359,7 @@ getproduct = async (page, saveProduct, limit, idShops) => {
 
                 productInfo1 = await resp.json()
                 productInfo2 = productInfo1.items
-                console.log(" ------ Tìm vị trí sản phẩm =  page.on ------")
+                //console.log(" ------ Tìm vị trí sản phẩm =  page.on ------")
                 productInfo2.forEach((item, index) => {
                     
                     if ((item.ads_keyword == null)) {
@@ -447,8 +447,15 @@ getproduct = async (page, saveProduct, limit, idShops) => {
 
 getproductByProductId = async (page, product) => {
     try {
+
         let thuHangSanPham
-        page.removeAllListeners('response');
+        let page_link = await page.url()
+        let product_page2 = page_link.split("&page=")[1]
+        if (product_page2 == undefined) {
+            product_page2 = 0
+        }
+
+        await page.removeAllListeners('response');
         await page.on('response', async (resp) => {
             let url = resp.url()
             let productInfo1, productInfo2
@@ -461,21 +468,22 @@ getproductByProductId = async (page, product) => {
                 productInfo2 = productInfo1.items
                // console.log(" ------ Tìm vị trí sản phẩm =  page.on ------")
                 //console.log("Tổng số product trên trang: " + product_page2 + " = " + productInfo2.length)
-                product_id_int = parseInt(product.product_id)
+                //let product_id_int = product.product_id
+                let product_id_int = parseInt(product.product_id)
                 productInfo2.forEach((item, index) => {
-                    //console.log(item.itemid  + " --- " + product.product_id) 
-                    if ((item.ads_keyword == null) && (item.itemid == product_id_int)) {
-                        console.log("Tìm thấy product trên trang: " + product_page2 + " = " + productInfo2.length)
-                        productId = product.id
-                        productIndex = index;
-                        thuHangSanPham = {
-                            sanpham: product.product_name,
-                            id: productId,
-                            shopId: product.shop_id,
-                            trang: product_page2,
-                            vitri: productIndex
-                        }
-                   
+                    //console.log(item.itemid  + " --- " + product_id_int) 
+                    if (item.itemid == product_id_int) {
+                        console.log("Tìm thấy product trên trang: " + product_page2 + "  Vi tri:  " + index)
+                        if (item.ads_keyword == null) {
+                            thuHangSanPham = {
+                                sanpham: product.product_name,
+                                keyword: product.keyword,
+                                id: item.itemid,
+                                shopId: product.shop_id,
+                                trang: product_page2,
+                                vitri: index
+                            }
+                        }                                           
                     }
                 })
 
@@ -509,19 +517,7 @@ getproductByProductId = async (page, product) => {
             await page.waitForTimeout(timeout);
         }
 
-        getProduct = []
-        // tìm vị trí sản phẩm có tên cần click
-        let page_link = await page.url()
-        product_page2 = page_link.split("&page=")[1]
-        if (product_page2 == undefined) {
-            product_page2 = 0
-        }
-
-        let productIds
-        // Lấy vị trí sản phẩm theo id sản phẩm
-        
-
-
+      
         if (product.max_page == 0 || product.max_page == null) {
             product.max_page = 5
         }
@@ -538,7 +534,7 @@ getproductByProductId = async (page, product) => {
                 }
                 return thuHangSanPham;
             }
-            next = await page.$$('.shopee-icon-button--right')
+            let next = await page.$$('.shopee-icon-button--right')
             if (next.length) {
                 await next[0].click()
                 timeout = Math.floor(Math.random() * (timemax - timemin)) + timemin;
@@ -2741,11 +2737,7 @@ runAllTime = async () => {
                                 // Check vị trí sản phẩm theo page, index
                                 // search lần đầu , search lần 2, 
                                 let productInfo = await getproductByProductId(page, product22)
-                                // if(product.product_page == null || product.product_page == "Not"){
-                                //     productInfo = await getproductByProductId(page, product)
-                                // }else{
-                                //     productInfo = await getproductByOldIndex(page, product)
-                                // }
+                                
                                 console.log(productInfo)
                                 if ((productInfo.vitri != "Not")) {
                                     today = new Date().toLocaleString();
