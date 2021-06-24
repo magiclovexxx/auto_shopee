@@ -1997,28 +1997,6 @@ runAllTime = async () => {
                         let checklogin = await loginShopee(page, user)
                         console.log(" --- Check login = " + checklogin)
                         if (checklogin == true) {
-
-                            if (!keywords.length) {
-                                console.log("Không có từ khoá")
-                                await browser.close();
-                                return false
-                            }
-                            if (slave_info.type == "click_ads_lien_quan") {
-                                let random_product = Math.floor(Math.random() * (keywords.length - 1))
-                                let product_check = keyword_ads_lien_quan[random_product]
-                                console.log(product_check)
-
-                                product_check_id = product_check.fullname
-
-                                await searchKeyWord(page, product_check.username)
-
-
-                            } else {
-                                // lấy ngẫu nhiên keyword để tìm kiếm
-                                randomkey = Math.floor(Math.random() * (keywords.length - 1));
-                                await searchKeyWord(page, keywords[randomkey])
-                            }
-
                             cookie = await page.cookies()
 
                             accountInfo = {
@@ -2046,8 +2024,29 @@ runAllTime = async () => {
                                 .catch(function (error) {
                                     console.log(error);
                                 });
+
+                            if (!keywords.length) {
+                                console.log("Không có từ khoá")
+                                await browser.close();
+                                return false
+                            }
+                            let random_product = Math.floor(Math.random() * (keywords.length - 1))
+                            if (slave_info.type == "click_ads_lien_quan") {
+                                
+                                let product_check = keyword_ads_lien_quan[random_product]
+                                console.log(product_check)
+
+                                await searchKeyWord(page, product_check.username)
+
+
+                            } else {
+                                // lấy ngẫu nhiên keyword để tìm kiếm
+                                randomkey = Math.floor(Math.random() * (keywords.length - 1));
+                                await searchKeyWord(page, keywords[randomkey])
+                            }
+                            
                             // lấy danh sách product đã lưu
-                            var saveProduct = fs.readFileSync("saveProduct.txt", { flag: "as+" });
+                            let saveProduct = fs.readFileSync("saveProduct.txt", { flag: "as+" });
                             saveProduct = saveProduct.toString();
                             saveProduct = saveProduct.split("\n")
 
@@ -2106,7 +2105,8 @@ runAllTime = async () => {
                             if (slave_info.type == "click_ads_lien_quan") {
                                 console.log("----- Click ADS Lien Quan -----")
                                 let saveProduct = []
-
+                                let product_check = keyword_ads_lien_quan[random_product]
+                                let product_check_id = product_check.fullname
                                 productInfo_ads_lien_quan = await get_vi_tri_san_pham(page, product_check_id, 3)
 
                                 if (productInfo_ads_lien_quan.vi_tri) {
@@ -2375,6 +2375,34 @@ runAllTime = async () => {
                         console.log(" --- Check login = " + checklogin)
 
                         if (checklogin == true) {
+                            cookie = await page.cookies()
+
+                            accountInfo = {
+                                user: user.username,
+                                pass: user.password,
+                                cookie: cookie,
+                                user_agent: userAgent,
+                                status: 1,
+                                message: "cập nhật account"
+                            }
+
+                            await axios.post(linkShopeeAccountUpdate, {
+                                data: accountInfo,
+                                timeout: 50000
+                            },
+                                {
+                                    headers: {
+                                        Connection: 'keep-alive',
+                                        'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36'
+                                    }
+                                })
+                                .then(function (response) {
+                                    console.log("Update action: " + " " + response.data);
+                                })
+                                .catch(function (error) {
+                                    console.log(error);
+                                });
+
                             console.log("---------- san pham pho bien ----------")
 
                             populateClick(page, listcategories)
@@ -2665,6 +2693,34 @@ runAllTime = async () => {
 
                         }
                         if (checklogin == true) {
+                            cookie = await page.cookies()
+
+                            accountInfo = {
+                                user: user.username,
+                                pass: user.password,
+                                cookie: cookie,
+                                user_agent: userAgent,
+                                status: 1,
+                                message: "cập nhật account"
+                            }
+
+                            await axios.post(linkShopeeAccountUpdate, {
+                                data: accountInfo,
+                                timeout: 50000
+                            },
+                                {
+                                    headers: {
+                                        Connection: 'keep-alive',
+                                        'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36'
+                                    }
+                                })
+                                .then(function (response) {
+                                    console.log("Update action: " + " " + response.data);
+                                })
+                                .catch(function (error) {
+                                    console.log(error);
+                                });
+
                             if (slave_info.type == "seo_top") {
                                 keywords = products = dataShopee.products
                                 console.log("----- Click theo sản phẩm -----")
