@@ -372,7 +372,7 @@ getproduct = async (page, saveProduct, limit, idShops) => {
                                     //console.log("Sản phẩm: " + item.itemid + "---" + item.shopid)
                                     thuHangSanPham = {
                                         sanpham: item.item_basic.name,
-                                        id: item.shopid,
+                                        id: item.itemid,
                                         shopId: shop.fullname,
                                         trang: product_page2,
                                         vitri: index + 1,
@@ -2763,7 +2763,7 @@ runAllTime = async () => {
                                     products_page = await page.$$('[data-sqe="link"]')
 
                                     if (productInfo.vitri > 4 && productInfo.vitri < 45) {
-                                        products_page[productInfo.vitri].click()
+                                        products_page[productInfo.vitri-1].click()
                                         await actionShopee(page)
                                         if (productInfo.randomOrder >= 1) {
                                             // Đặt hàng
@@ -2841,7 +2841,7 @@ runAllTime = async () => {
 
                                     let products_page = await page.$$('[data-sqe="link"]')
                                   
-                                        products_page[productInfo.vitri].click()
+                                        products_page[productInfo.vitri-1].click()
                                         timeout = Math.floor(Math.random() * (5000 - 3000)) + 3000
                                         await page.waitForTimeout(timeout)
                                         productLink = await page.url()
