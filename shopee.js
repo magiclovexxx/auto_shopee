@@ -361,9 +361,9 @@ getproduct = async (page, saveProduct, limit, idShops) => {
                 productInfo2 = productInfo1.items
                 //console.log(" ------ Tìm vị trí sản phẩm =  page.on ------")
                 productInfo2.forEach((item, index) => {
-                    
+
                     if ((item.ads_keyword == null)) {
-                        
+
                         idShops.forEach((shop, index2) => {
                             // Nếu sản phẩm thuộc trong danh sách shop
                             if (shop.fullname == item.shopid) {
@@ -377,9 +377,9 @@ getproduct = async (page, saveProduct, limit, idShops) => {
                                         trang: product_page2,
                                         vitri: index + 1,
                                     }
-                                 
+
                                 }
-                                
+
                             }
                         })
 
@@ -390,7 +390,7 @@ getproduct = async (page, saveProduct, limit, idShops) => {
 
         });
 
-       
+
         await page.keyboard.press('PageDown');
         timeout = Math.floor(Math.random() * (timemax - timemin)) + timemin;
         await page.waitForTimeout(timeout);
@@ -422,7 +422,7 @@ getproduct = async (page, saveProduct, limit, idShops) => {
             console.log(thuHangSanPham)
             return thuHangSanPham;
         }
-      
+
         if (limit == 0) {
             return false
         } else {
@@ -466,7 +466,7 @@ getproductByProductId = async (page, product) => {
 
                 productInfo1 = await resp.json()
                 productInfo2 = productInfo1.items
-               // console.log(" ------ Tìm vị trí sản phẩm =  page.on ------")
+                // console.log(" ------ Tìm vị trí sản phẩm =  page.on ------")
                 //console.log("Tổng số product trên trang: " + product_page2 + " = " + productInfo2.length)
                 //let product_id_int = product.product_id
                 let product_id_int = parseInt(product.product_id)
@@ -483,7 +483,7 @@ getproductByProductId = async (page, product) => {
                                 trang: product_page2,
                                 vitri: index
                             }
-                        }                                           
+                        }
                     }
                 })
 
@@ -517,7 +517,7 @@ getproductByProductId = async (page, product) => {
             await page.waitForTimeout(timeout);
         }
 
-      
+
         if (product.max_page == 0 || product.max_page == null) {
             product.max_page = 5
         }
@@ -2737,7 +2737,7 @@ runAllTime = async () => {
                                 // Check vị trí sản phẩm theo page, index
                                 // search lần đầu , search lần 2, 
                                 let productInfo = await getproductByProductId(page, product22)
-                                
+
                                 console.log(productInfo)
                                 if ((productInfo.vitri != "Not")) {
                                     today = new Date().toLocaleString();
@@ -2762,19 +2762,19 @@ runAllTime = async () => {
 
                                     products_page = await page.$$('[data-sqe="link"]')
 
-                                    if (productInfo.vitri > 4 && productInfo.vitri < 45) {
-                                        products_page[productInfo.vitri-1].click()
-                                        await actionShopee(page)
-                                        if (productInfo.randomOrder >= 1) {
-                                            // Đặt hàng
-                                            let randomOrder = Math.floor(Math.random() * (productInfo.randomOrder + 1))
-                                            if (randomOrder % productInfo.randomOrder == 0) {
-                                                //    await orderProduct(page, productInfo)
-                                            }
+
+                                    products_page[productInfo.vitri - 1].click()
+                                    await actionShopee(page)
+                                    if (productInfo.randomOrder >= 1) {
+                                        // Đặt hàng
+                                        let randomOrder = Math.floor(Math.random() * (productInfo.randomOrder + 1))
+                                        if (randomOrder % productInfo.randomOrder == 0) {
+                                            //    await orderProduct(page, productInfo)
                                         }
-                                        await page.waitForTimeout(1000);
-                                        await removeCart(page)
                                     }
+                                    await page.waitForTimeout(1000);
+                                    await removeCart(page)
+
 
                                 } else {
                                     console.log("Không tìm thấy sản phẩm")
@@ -2840,25 +2840,25 @@ runAllTime = async () => {
                                     }
 
                                     let products_page = await page.$$('[data-sqe="link"]')
-                                  
-                                        products_page[productInfo.vitri-1].click()
-                                        timeout = Math.floor(Math.random() * (5000 - 3000)) + 3000
-                                        await page.waitForTimeout(timeout)
-                                        productLink = await page.url()
-                                        await actionShopee(page)
-                                        await page.waitForTimeout(1000);
 
-                                        if (productInfo.randomOrder >= 1) {
-                                            // Đặt hàng
-                                            randomOrder = Math.floor(Math.random() * (productInfo.randomOrder + 1))
-                                            if (randomOrder % productInfo.randomOrder == 0) {
-                                                //    await orderProduct(page, productInfo)
-                                            }
+                                    products_page[productInfo.vitri - 1].click()
+                                    timeout = Math.floor(Math.random() * (5000 - 3000)) + 3000
+                                    await page.waitForTimeout(timeout)
+                                    productLink = await page.url()
+                                    await actionShopee(page)
+                                    await page.waitForTimeout(1000);
 
+                                    if (productInfo.randomOrder >= 1) {
+                                        // Đặt hàng
+                                        randomOrder = Math.floor(Math.random() * (productInfo.randomOrder + 1))
+                                        if (randomOrder % productInfo.randomOrder == 0) {
+                                            //    await orderProduct(page, productInfo)
                                         }
-                                        await viewShop(page, productLink)
-                                        await removeCart(page)
-                                  
+
+                                    }
+                                    await viewShop(page, productLink)
+                                    await removeCart(page)
+
                                 } else {
                                     // nếu đã check hết product sẽ xoá file saveProduct.txt                                
                                     saveProduct = [];
