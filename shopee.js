@@ -1772,7 +1772,7 @@ runAllTime = async () => {
 
             if (checkNetwork == 1) {
                 console.log("connected");
-                if (mode != "DEV") {
+                if (mode != "DEV" && slave_info.network == "dcom") {
                     // Đổi MAC
 
                     await genRandomMac()
@@ -1822,11 +1822,12 @@ runAllTime = async () => {
         accounts = dataShopee.accounts
 
         listProducts = []
+        if (slave_info.type != "seo_all_top") {
         dataShopee.products.forEach(item => {
             product = item.fullname
             listProducts.push(product)
         })
-
+    }
         listcategories = dataShopee.categories
     } catch (error) {
         console.log(error)
