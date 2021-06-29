@@ -381,25 +381,25 @@ getproduct = async (page, saveProduct, limit, idShops) => {
 
 
         await page.keyboard.press('PageDown');
-        timeout = Math.floor(Math.random() * (5000 - 4000)) + 4000;
+        timeout = Math.floor(Math.random() * (6000 - 5000)) + 5000;
         await page.waitForTimeout(timeout);
         await page.keyboard.press('PageDown');
-        timeout = Math.floor(Math.random() * (5000 - 4000)) + 4000;
+        timeout = Math.floor(Math.random() * (6000 - 5000)) + 5000;
         await page.waitForTimeout(timeout);
         await page.keyboard.press('PageDown');
-        timeout = Math.floor(Math.random() * (5000 - 4000)) + 4000;
+        timeout = Math.floor(Math.random() * (6000 - 5000)) + 5000;
         await page.waitForTimeout(timeout);
         await page.keyboard.press('PageDown');
-        timeout = Math.floor(Math.random() * (5000 - 4000)) + 4000;
+        timeout = Math.floor(Math.random() * (6000 - 5000)) + 5000;
         await page.waitForTimeout(timeout);
         await page.keyboard.press('PageDown');
-        timeout = Math.floor(Math.random() * (5000 - 4000)) + 4000;
+        timeout = Math.floor(Math.random() * (6000 - 5000)) + 5000;
         await page.waitForTimeout(timeout);
         await page.keyboard.press('PageDown');
-        timeout = Math.floor(Math.random() * (5000 - 4000)) + 4000;
+        timeout = Math.floor(Math.random() * (6000 - 5000)) + 5000;
         await page.waitForTimeout(timeout);
         await page.keyboard.press('PageDown');
-        timeout = Math.floor(Math.random() * (5000 - 4000)) + 4000;
+        timeout = Math.floor(Math.random() * (6000 - 5000)) + 5000;
         await page.waitForTimeout(timeout);
 
         if (phobien) {
@@ -2273,8 +2273,8 @@ runAllTime = async () => {
                     await page.setUserAgent(userAgent)
 
                     // Random kích cỡ màn hình
-                    width = Math.floor(Math.random() * (1280 - 1000)) + 1000;;
-                    height = Math.floor(Math.random() * (800 - 600)) + 600;;
+                    width = Math.floor(Math.random() * (1280 - 1200)) + 1200;;
+                    height = Math.floor(Math.random() * (800 - 700)) + 700;;
 
                     await page.setViewport({
                         width: width,
