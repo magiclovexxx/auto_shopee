@@ -381,33 +381,31 @@ getproduct = async (page, saveProduct, limit, idShops) => {
 
 
         await page.keyboard.press('PageDown');
-        timeout = Math.floor(Math.random() * (timemax - timemin)) + timemin;
+        timeout = Math.floor(Math.random() * (5000 - 4000)) + 4000;
         await page.waitForTimeout(timeout);
         await page.keyboard.press('PageDown');
-        timeout = Math.floor(Math.random() * (timemax - timemin)) + timemin;
+        timeout = Math.floor(Math.random() * (5000 - 4000)) + 4000;
         await page.keyboard.press('PageDown');
-        timeout = Math.floor(Math.random() * (timemax - timemin)) + timemin;
+        timeout = Math.floor(Math.random() * (5000 - 4000)) + 4000;
         await page.waitForTimeout(timeout);
         await page.keyboard.press('PageDown');
-        timeout = Math.floor(Math.random() * (timemax - timemin)) + timemin;
+        timeout = Math.floor(Math.random() * (5000 - 4000)) + 4000;
         await page.keyboard.press('PageDown');
-        timeout = Math.floor(Math.random() * (timemax - timemin)) + timemin;
+        timeout = Math.floor(Math.random() * (5000 - 4000)) + 4000;
         await page.waitForTimeout(timeout);
         await page.keyboard.press('PageDown');
-        timeout = Math.floor(Math.random() * (timemax - timemin)) + timemin;
+        timeout = Math.floor(Math.random() * (5000 - 4000)) + 4000;
         await page.waitForTimeout(timeout);
         await page.keyboard.press('PageDown');
-        timeout = Math.floor(Math.random() * (timemax - timemin)) + timemin;
+        timeout = Math.floor(Math.random() * (5000 - 4000)) + 4000;
         await page.waitForTimeout(timeout);
-        await page.keyboard.press('PageDown');
-        timeout = Math.floor(Math.random() * (timemax - timemin)) + timemin;
-        await page.waitForTimeout(timeout);
+
         if (phobien) {
             await page.keyboard.press('PageDown');
-            timeout = Math.floor(Math.random() * (timemax - timemin)) + timemin;
+            timeout = Math.floor(Math.random() * (5000 - 4000)) + 4000;
             await page.waitForTimeout(timeout);
             await page.keyboard.press('PageDown');
-            timeout = Math.floor(Math.random() * (timemax - timemin)) + timemin;
+            timeout = Math.floor(Math.random() * (5000 - 4000)) + 4000;
             await page.waitForTimeout(timeout);
         }
 
