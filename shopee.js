@@ -57,18 +57,7 @@ if (headless_mode == "0") {
 
 logs = 1
 // Lấy ngẫu nhiên số lượng = maxtab profile để gửi đến master lấy dữ liệu schedule về thao tác
-function GenDirToGetData(maxTab, listAccounts) {
-    // Lấy id profile đã tương tác trước đó
-    maxid = []
-    checkLogoutId = []
-
-    for (let a = 0; a < (maxTab); a++) {           // Lưu các id vừa lấy để gửi lên server trong mảng idnotsave lưu vào mảng maxid.
-        maxid.push(listAccounts[a])
-    }
-    return maxid;
-
-}
-
+console.log("--------------- Mới -----------------")
 loginShopee = async (page, accounts) => {
 
     //await page.goto("https://shopee.vn")
@@ -406,7 +395,12 @@ getproduct = async (page, saveProduct, limit, idShops) => {
         await page.waitForTimeout(timeout);
         await page.keyboard.press('PageDown');
         timeout = Math.floor(Math.random() * (timemax - timemin)) + timemin;
-
+        await page.waitForTimeout(timeout);
+        await page.keyboard.press('PageDown');
+        timeout = Math.floor(Math.random() * (timemax - timemin)) + timemin;
+        await page.waitForTimeout(timeout);
+        await page.keyboard.press('PageDown');
+        timeout = Math.floor(Math.random() * (timemax - timemin)) + timemin;
         await page.waitForTimeout(timeout);
         if (phobien) {
             await page.keyboard.press('PageDown');
@@ -2841,7 +2835,7 @@ runAllTime = async () => {
                                     }
 
                                     let products_page = await page.$$('[data-sqe="link"]')
-
+                                    console.log("Tong so san pham: " + products_page.length)
                                     products_page[productInfo.vitri - 1].click()
                                     timeout = Math.floor(Math.random() * (5000 - 3000)) + 3000
                                     await page.waitForTimeout(timeout)
