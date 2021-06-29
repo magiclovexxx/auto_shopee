@@ -385,11 +385,13 @@ getproduct = async (page, saveProduct, limit, idShops) => {
         await page.waitForTimeout(timeout);
         await page.keyboard.press('PageDown');
         timeout = Math.floor(Math.random() * (5000 - 4000)) + 4000;
+        await page.waitForTimeout(timeout);
         await page.keyboard.press('PageDown');
         timeout = Math.floor(Math.random() * (5000 - 4000)) + 4000;
         await page.waitForTimeout(timeout);
         await page.keyboard.press('PageDown');
         timeout = Math.floor(Math.random() * (5000 - 4000)) + 4000;
+        await page.waitForTimeout(timeout);
         await page.keyboard.press('PageDown');
         timeout = Math.floor(Math.random() * (5000 - 4000)) + 4000;
         await page.waitForTimeout(timeout);
@@ -484,20 +486,26 @@ getproductByProductId = async (page, product) => {
         });
 
         await page.waitForSelector('[data-sqe="name"]')
-        timeout = Math.floor(Math.random() * (timemax - timemin)) + timemin;
+        await page.keyboard.press('PageDown');
+        timeout = Math.floor(Math.random() * (5000 - 4000)) + 4000;
         await page.waitForTimeout(timeout);
         await page.keyboard.press('PageDown');
-        await page.waitForTimeout(3000);
-        await page.keyboard.press('PageDown');
-        timeout = Math.floor(Math.random() * (timemax - timemin)) + timemin;
+        timeout = Math.floor(Math.random() * (5000 - 4000)) + 4000;
         await page.waitForTimeout(timeout);
         await page.keyboard.press('PageDown');
-        await page.waitForTimeout(3000);
-        await page.keyboard.press('PageDown');
-        timeout = Math.floor(Math.random() * (timemax - timemin)) + timemin;
+        timeout = Math.floor(Math.random() * (5000 - 4000)) + 4000;
         await page.waitForTimeout(timeout);
         await page.keyboard.press('PageDown');
-        timeout = Math.floor(Math.random() * (timemax - timemin)) + timemin;
+        timeout = Math.floor(Math.random() * (5000 - 4000)) + 4000;
+        await page.waitForTimeout(timeout);
+        await page.keyboard.press('PageDown');
+        timeout = Math.floor(Math.random() * (5000 - 4000)) + 4000;
+        await page.waitForTimeout(timeout);
+        await page.keyboard.press('PageDown');
+        timeout = Math.floor(Math.random() * (5000 - 4000)) + 4000;
+        await page.waitForTimeout(timeout);
+        await page.keyboard.press('PageDown');
+        timeout = Math.floor(Math.random() * (5000 - 4000)) + 4000;
         await page.waitForTimeout(timeout);
 
         if (phobien) {
@@ -561,6 +569,9 @@ getproductByOldIndex = async (page, product) => {
         await page.waitForTimeout(timeout);
         await page.keyboard.press('PageDown');
         await page.waitForTimeout(3000);
+        await page.keyboard.press('PageDown');
+        timeout = Math.floor(Math.random() * (timemax - timemin)) + timemin;
+        await page.waitForTimeout(timeout);
         await page.keyboard.press('PageDown');
         timeout = Math.floor(Math.random() * (timemax - timemin)) + timemin;
         await page.waitForTimeout(timeout);
@@ -659,6 +670,9 @@ getproductAds = async (page, idShops, limit) => {
         await page.keyboard.press('PageDown');
         timeout = Math.floor(Math.random() * (timemax - timemin)) + timemin;
         await page.waitForTimeout(timeout);
+        await page.keyboard.press('PageDown');
+        timeout = Math.floor(Math.random() * (timemax - timemin)) + timemin;
+        await page.waitForTimeout(timeout);
         getProduct = []
 
         getProduct = await page.evaluate(() => {
@@ -726,6 +740,9 @@ getproductAdsDaLoaiTru = async (page, idShops) => {
         await page.waitForTimeout(timeout);
         await page.keyboard.press('PageDown');
         await page.waitForTimeout(3000);
+        await page.keyboard.press('PageDown');
+        timeout = Math.floor(Math.random() * (timemax - timemin)) + timemin;
+        await page.waitForTimeout(timeout);
         await page.keyboard.press('PageDown');
         timeout = Math.floor(Math.random() * (timemax - timemin)) + timemin;
         await page.waitForTimeout(timeout);
