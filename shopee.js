@@ -40,6 +40,8 @@ disable_css = process.env.DISABLE_CSS     // k load css
 disable_image = 1     // k load ảnh
 disable_css = 1     // k load css
 
+profile_Dir = profileDir
+
 os_slave = process.env.OS_SLAVE
 if (mode === "DEV") {
     timemax = 5000;
@@ -249,7 +251,7 @@ populateClick = async (page, listcategories) => {
 
 get_vi_tri_san_pham = async (page, product_id, limit) => {
     try {
-        let thuHangSanPham
+        let thuHangSanPham = false
         await page.keyboard.press('PageDown');
         timeout = Math.floor(Math.random() * (timemax - timemin)) + timemin;
         await page.waitForTimeout(timeout);
@@ -274,30 +276,16 @@ get_vi_tri_san_pham = async (page, product_id, limit) => {
             listProductAds = []
             if (titles.length) {
                 titles.forEach((item, index) => {
-
-                    let check_shop_click = false
-                    let checkAds = item.children[0].children[0].children[0].children
-
+                    let check_ads = item.querySelector('[data-sqe="ad"]')
                     //console.log(checkAds.length)
-                    console.log("Tìm thấy vị trí sản phẩm: " + item.href)
-                    checkAds.forEach(item2 => {
-                        if ((item2.children.length)) {
-                            if ((item2.children[0].dataset.sqe != "ad")) {
-
-                                if (item.href.includes(product_id) == true) {
-                                    console.log("Tìm thấy vị trí sản phẩm: " + product_id)
-                                    thong_tin_san_pham = {
-                                        vi_tri: index,
-                                        url: item.href
-                                    }
-
-
-                                }
-
+                    if (!check_ads) {    
+                        if (item.href.includes(product_id) == true) {
+                            thong_tin_san_pham = {
+                                vi_tri: index,
+                                url: item.href
                             }
-                        }
-                    })
-
+                        }    
+                    }                     
                 })
             }
             return thong_tin_san_pham
@@ -332,90 +320,101 @@ get_vi_tri_san_pham = async (page, product_id, limit) => {
 getproduct = async (page, saveProduct, limit, idShops) => {
     try {
         let thuHangSanPham
-        let page_link = await page.url()
-        product_page2 = page_link.split("&page=")[1]
-        if (product_page2 == undefined) {
-            product_page2 = 0
-        }
-        await page.removeAllListeners('response');
-        await page.on('response', async (resp) => {
-            let url = resp.url()
-            let productInfo1, productInfo2
-
-            let checkUrlproduct = url.split("search/search_items?by=relevancy&keyword=")
-
-            if (checkUrlproduct.length > 1) {
-
-                productInfo1 = await resp.json()
-                productInfo2 = productInfo1.items
-                //console.log(" ------ Tìm vị trí sản phẩm =  page.on ------")
-                productInfo2.forEach((item, index) => {
-
-                    if ((item.ads_keyword == null)) {
-
-                        idShops.forEach((shop, index2) => {
-                            // Nếu sản phẩm thuộc trong danh sách shop
-                            if (shop.fullname == item.shopid) {
-                                // Nếu sản phẩm không thuộc trong danh sách sp đã save
-                                if (!saveProduct.includes(item.itemid)) {
-                                    //console.log("Sản phẩm: " + item.itemid + "---" + item.shopid)
-                                    thuHangSanPham = {
-                                        sanpham: item.item_basic.name,
-                                        id: item.itemid,
-                                        shopId: shop.fullname,
-                                        trang: product_page2,
-                                        vitri: index + 1,
-                                    }
-
-                                }
-
-                            }
-                        })
-
-                    }
-                })
-
-            }
-
-        });
-
-
         await page.keyboard.press('PageDown');
-        timeout = Math.floor(Math.random() * (6000 - 5000)) + 5000;
+        timeout = Math.floor(Math.random() * (timemax - timemin)) + timemin;
         await page.waitForTimeout(timeout);
         await page.keyboard.press('PageDown');
-        timeout = Math.floor(Math.random() * (6000 - 5000)) + 5000;
+        timeout = Math.floor(Math.random() * (timemax - timemin)) + timemin;
+        await page.keyboard.press('PageDown');
+        timeout = Math.floor(Math.random() * (timemax - timemin)) + timemin;
         await page.waitForTimeout(timeout);
         await page.keyboard.press('PageDown');
-        timeout = Math.floor(Math.random() * (6000 - 5000)) + 5000;
+        timeout = Math.floor(Math.random() * (timemax - timemin)) + timemin;
+        await page.keyboard.press('PageDown');
+        timeout = Math.floor(Math.random() * (timemax - timemin)) + timemin;
         await page.waitForTimeout(timeout);
         await page.keyboard.press('PageDown');
-        timeout = Math.floor(Math.random() * (6000 - 5000)) + 5000;
+        timeout = Math.floor(Math.random() * (timemax - timemin)) + timemin;
         await page.waitForTimeout(timeout);
         await page.keyboard.press('PageDown');
-        timeout = Math.floor(Math.random() * (6000 - 5000)) + 5000;
+        timeout = Math.floor(Math.random() * (timemax - timemin)) + timemin;
         await page.waitForTimeout(timeout);
-        await page.keyboard.press('PageDown');
-        timeout = Math.floor(Math.random() * (6000 - 5000)) + 5000;
-        await page.waitForTimeout(timeout);
-        await page.keyboard.press('PageDown');
-        timeout = Math.floor(Math.random() * (6000 - 5000)) + 5000;
-        await page.waitForTimeout(timeout);
-
         if (phobien) {
             await page.keyboard.press('PageDown');
-            timeout = Math.floor(Math.random() * (5000 - 4000)) + 4000;
+            timeout = Math.floor(Math.random() * (timemax - timemin)) + timemin;
             await page.waitForTimeout(timeout);
             await page.keyboard.press('PageDown');
-            timeout = Math.floor(Math.random() * (5000 - 4000)) + 4000;
+            timeout = Math.floor(Math.random() * (timemax - timemin)) + timemin;
             await page.waitForTimeout(timeout);
         }
+        getProduct = []
+        getProduct = await page.evaluate(() => {
+
+            // Class có link bài đăng trên profile          
+            let titles = document.querySelectorAll('[data-sqe="link"]');
+            listProductLinks = []
+
+            titles.forEach((item) => {
+                let check_ads = item.querySelector('[data-sqe="ad"]')
+                //console.log(checkAds.length)
+                if (check_ads) {
+
+                    listProductLinks.push("Sản Phẩm ads")
+
+                } else {
+                    listProductLinks.push(item.href)
+                }
+
+            })
+            return listProductLinks
+        })
+
+        let productIndex = 0
+        let productId
+        //console.log(getProduct)
+        // tìm vị trí sản phẩm có tên cần click
+        let productIds
+
+        getProduct.forEach((item, index) => {
+
+            // tìm sản phẩm trong danh sách shop cần click
+            idShops.forEach((shop, index2) => {
+                check_san_pham = item.includes(shop.fullname)
+                if (check_san_pham == true) {
+                    let productIds2 = item.split(shop.fullname + ".")
+                    productId = productIds2[1]
+                    // Tìm san phâm chưa được click
+                    if (!saveProduct.includes(productId)) {                       
+                        thuHangSanPham = {
+                            sanpham: getProduct[index],
+                            id: productId,
+                            shopId: shop.fullname,
+                            trang: (shop.pages - limit),
+                            vitri: index +1,
+                        }
+                        if (shop.twofa) {
+                            thuHangSanPham.randomOrder = shop.twofa
+                        } else {
+                            thuHangSanPham.randomOrder = 0
+                        }
+                    }
+                    return true
+                }
+            })
+
+        })
 
         if (thuHangSanPham) {
             console.log("---------- vi tri cac san pham cua shop ----------")
             console.log(thuHangSanPham)
             return thuHangSanPham;
         }
+        //     if(!xxx){
+        //         if(shop.pages && limit>shop.pages){
+        //             limit=shop.pages
+        //         }           
+        //     }
+        //    xxx = 1
 
         if (limit == 0) {
             return false
@@ -441,71 +440,26 @@ getproduct = async (page, saveProduct, limit, idShops) => {
 
 getproductByProductId = async (page, product) => {
     try {
-
         let thuHangSanPham
-        let page_link = await page.url()
-        let product_page2 = page_link.split("&page=")[1]
-        if (product_page2 == undefined) {
-            product_page2 = 0
-        }
-
-        await page.removeAllListeners('response');
-        await page.on('response', async (resp) => {
-            let url = resp.url()
-            let productInfo1, productInfo2
-
-            let checkUrlproduct = url.split("search/search_items?by=relevancy&keyword=")
-
-            if (checkUrlproduct.length > 1) {
-
-                productInfo1 = await resp.json()
-                productInfo2 = productInfo1.items
-                // console.log(" ------ Tìm vị trí sản phẩm =  page.on ------")
-                //console.log("Tổng số product trên trang: " + product_page2 + " = " + productInfo2.length)
-                //let product_id_int = product.product_id
-                let product_id_int = parseInt(product.product_id)
-                productInfo2.forEach((item, index) => {
-                    //console.log(item.itemid  + " --- " + product_id_int) 
-                    if (item.itemid == product_id_int) {
-                        console.log("Tìm thấy product trên trang: " + product_page2 + "  Vi tri:  " + index)
-                        if (item.ads_keyword == null) {
-                            thuHangSanPham = {
-                                sanpham: product.product_name,
-                                keyword: product.keyword,
-                                id: item.itemid,
-                                shopId: product.shop_id,
-                                trang: product_page2,
-                                vitri: index
-                            }
-                        }
-                    }
-                })
-
-            }
-
-        });
+        // Next dến trang có vị trí cũ của sản phẩm
+        product_page = product.product_page
+        product_index = product.product_index
 
         await page.waitForSelector('[data-sqe="name"]')
-        await page.keyboard.press('PageDown');
-        timeout = Math.floor(Math.random() * (5000 - 4000)) + 4000;
+        timeout = Math.floor(Math.random() * (timemax - timemin)) + timemin;
         await page.waitForTimeout(timeout);
         await page.keyboard.press('PageDown');
-        timeout = Math.floor(Math.random() * (5000 - 4000)) + 4000;
+        await page.waitForTimeout(3000);
+        await page.keyboard.press('PageDown');
+        timeout = Math.floor(Math.random() * (timemax - timemin)) + timemin;
         await page.waitForTimeout(timeout);
         await page.keyboard.press('PageDown');
-        timeout = Math.floor(Math.random() * (5000 - 4000)) + 4000;
+        await page.waitForTimeout(3000);
+        await page.keyboard.press('PageDown');
+        timeout = Math.floor(Math.random() * (timemax - timemin)) + timemin;
         await page.waitForTimeout(timeout);
         await page.keyboard.press('PageDown');
-        timeout = Math.floor(Math.random() * (5000 - 4000)) + 4000;
-        await page.waitForTimeout(timeout);
-        await page.keyboard.press('PageDown');
-        timeout = Math.floor(Math.random() * (5000 - 4000)) + 4000;
-        await page.waitForTimeout(timeout);
-        await page.keyboard.press('PageDown');
-        timeout = Math.floor(Math.random() * (5000 - 4000)) + 4000;
-        await page.waitForTimeout(timeout);
-        await page.keyboard.press('PageDown');
-        timeout = Math.floor(Math.random() * (5000 - 4000)) + 4000;
+        timeout = Math.floor(Math.random() * (timemax - timemin)) + timemin;
         await page.waitForTimeout(timeout);
 
         if (phobien) {
@@ -517,7 +471,56 @@ getproductByProductId = async (page, product) => {
             await page.waitForTimeout(timeout);
         }
 
+        getProduct = []
+        // Lấy vị trí sản phẩm theo id sản phẩm
+        getProduct = await page.evaluate(() => {
 
+            // Class có link bài đăng trên profile          
+            let titles = document.querySelectorAll('[data-sqe="link"]');
+            listProductLinks = []
+            titles.forEach((item) => {
+                let check_ads = item.querySelector('[data-sqe="ad"]')
+                //console.log(checkAds.length)
+                if (check_ads) {
+
+                    listProductLinks.push("Sản Phẩm ads")
+
+                } else {
+                    listProductLinks.push(item.href)
+                }
+
+            })
+            return listProductLinks
+        })
+
+        let productIndex = 0
+        let productId
+        // tìm vị trí sản phẩm có tên cần click
+        let page_link = await page.url()
+        product_page2 = page_link.split("&page=")[1]
+        if (product_page2 == undefined) {
+            product_page2 = 0
+        }
+
+        let productIds
+
+        getProduct.forEach((item, index) => {
+            if ((index < 45) && (index > 4)) {
+                productIds = item.split(product.product_id)
+                if (productIds.length == 2) {
+                    productId = product.id
+                    productIndex = index;
+                    thuHangSanPham = {
+                        sanpham: product.product_name,
+                        id: productId,
+                        shopId: product.shop_id,
+                        trang: product_page2,
+                        vitri: productIndex
+                    }
+                    return true
+                }
+            }
+        })
         if (product.max_page == 0 || product.max_page == null) {
             product.max_page = 5
         }
@@ -527,14 +530,14 @@ getproductByProductId = async (page, product) => {
             if (product_page2 == product.max_page) {
                 thuHangSanPham = {
                     sanpham: product.product_name,
-                    id: product.product_id,
+                    id: productId,
                     shopId: product.shop_id,
                     trang: "Not",
                     vitri: "Not"
                 }
                 return thuHangSanPham;
             }
-            let next = await page.$$('.shopee-icon-button--right')
+            next = await page.$$('.shopee-icon-button--right')
             if (next.length) {
                 await next[0].click()
                 timeout = Math.floor(Math.random() * (timemax - timemin)) + timemin;
@@ -548,6 +551,7 @@ getproductByProductId = async (page, product) => {
         return false
     }
 }
+
 
 getproductByOldIndex = async (page, product) => {
     try {
@@ -885,7 +889,9 @@ getproductAdsClickShop = async (page, idShops, limit) => {
 }
 
 get_vi_tri_san_pham_ads_lien_quan = async (page, shop_loai_tru_ads_lien_quan, shop_click_ads_lien_quan) => {
-    try {
+    
+        let get_vi_tri_san_pham_click = false
+        let danh_sach_vi_tri_ads_da_loai_tru =[]
         await page.keyboard.press('PageDown');
         timeout = Math.floor(Math.random() * (2000 - 1000)) + 1000;
         await page.waitForTimeout(timeout);
@@ -917,10 +923,13 @@ get_vi_tri_san_pham_ads_lien_quan = async (page, shop_loai_tru_ads_lien_quan, sh
         timeout = Math.floor(Math.random() * (6000 - 3000)) + 4000;
         await page.waitForTimeout(timeout);
         xxx = await page.$$('[data-sqe="link"]')
-        console.log("Tổng số sản phẩm tương tự: " + xxx.length)
+       
         if (xxx.length > 0) {
+
+            // click next de xem cac san pham tuong tu
             check_button_click = await page.$$('.carousel-arrow.carousel-arrow--next.carousel-arrow--hint')
             if (check_button_click.length == 3) {
+                try {
                 await check_button_click[1].click()
                 timeout = Math.floor(Math.random() * (2000 - 1000)) + 1000;
                 await page.waitForTimeout(timeout);
@@ -939,93 +948,93 @@ get_vi_tri_san_pham_ads_lien_quan = async (page, shop_loai_tru_ads_lien_quan, sh
                 await check_button_click[2].click()
                 timeout = Math.floor(Math.random() * (2000 - 1000)) + 1000;
                 await page.waitForTimeout(timeout);
+                }catch{
+                    console.log(error)
+                }
             }
 
-
-
-            get_vi_tri_san_pham_click = await page.evaluate((shop_click_ads_lien_quan, shop_loai_tru_ads_lien_quan) => {
+            try {
+                           
+            danh_sach_vi_tri_ads = await page.evaluate((shop_click_ads_lien_quan, shop_loai_tru_ads_lien_quan) => {
                 // Class có link sản phẩm          
                 let titles = document.querySelectorAll('[data-sqe="link"]');
                 let check_shop_click = false
-                listProductAds = []
+                danh_sach_vi_tri_ads = []
                 if (titles.length) {
                     titles.forEach((item, index) => {
-                        if (index > 23) {
-                            let checkads2 = 0
-
-                            let checkAds = item.children[0].children[0].children[0].children
-
-                            //console.log(checkAds.length)
-                            checkAds.forEach(item2 => {
-                                if ((item2.children.length)) {
-                                    if ((item2.children[0].dataset.sqe == "ad")) {
-
-                                        checkads2 = 1
-
-                                        shop_click_ads_lien_quan.forEach((shop) => {
-
-                                            if (item.href.includes(shop.fullname) == true) {
-                                                check_shop_click = {
-                                                    vi_tri: index,
-                                                    url: item.href
-                                                }
-                                            }
-                                        })
-
-                                    }
-                                }
-                            })
+                        let ads_info = {
+                            vi_tri: 0,
+                            url: ""
                         }
-                    })
-
-                    if (check_shop_click == false) {
-                        titles.forEach((item, index) => {
-                            if (index > 23) {
-
-                                let check_shop_loai_tru = false
-
-                                let checkAds2 = item.children[0].children[0].children[0].children
-
-                                //console.log(checkAds.length)
-                                checkAds2.forEach(item2 => {
-                                    if ((item2.children.length)) {
-                                        if ((item2.children[0].dataset.sqe == "ad")) {
-
-                                            checkads2 = 1
-
-                                            shop_loai_tru_ads_lien_quan.forEach((shop2) => {
-
-                                                if (item.href.includes(shop2.fullname) == false) {
-                                                    check_shop_loai_Tru = index
-                                                }
-                                            })
-
-                                        }
-                                    }
-                                })
-
-                                if (check_shop_loai_tru == false) {
-                                    check_shop_click = {
-                                        vi_tri: index,
-                                        url: item.href,
-                                        type: "Random"
-                                    }
-                                }
+                        if (index > 23) {
+                            let check_ads = item.querySelector('[data-sqe="ad"]')
+                            if (check_ads) {
+                                ads_info.vi_tri = index
+                                ads_info.url = item.href
+                                danh_sach_vi_tri_ads.push(ads_info)
                             }
-                        })
 
-                    }
+                        }
+                    })                   
 
                 }
-                return check_shop_click
+                return danh_sach_vi_tri_ads
             }, shop_click_ads_lien_quan, shop_loai_tru_ads_lien_quan)
+
+            // Tim vi tri ads shop can click
+            
+            danh_sach_vi_tri_ads.forEach(item =>{
+                shop_click_ads_lien_quan.forEach(item2 =>{
+                    let check_shop = item.url.split(item2.fullname)
+                    if(check_shop.length > 1){
+                        get_vi_tri_san_pham_click = {
+                            vi_tri: item.vi_tri,
+                            url: item.url
+                        }
+                        return
+                    }
+                })
+               
+            })
+          
+            if(get_vi_tri_san_pham_click != false){                
+                return get_vi_tri_san_pham_click
+            }else{
+                // Neu k tim thay san pham can click ads thi loai tru danh sach sp
+                console.log("Vi tri ADS: " + danh_sach_vi_tri_ads.length)
+                danh_sach_vi_tri_ads.forEach(item =>{
+                    let check_1 = 0
+                    shop_loai_tru_ads_lien_quan.forEach(item2 =>{
+                        let check_shop = item.url.split(item2.fullname)
+                        if(check_shop.length > 1){
+                            check_1 = 1                            
+                        }
+                    })
+                    if(check_1 == 0){
+                        danh_sach_vi_tri_ads_da_loai_tru.push(item)
+                        
+                    }
+                   
+                })
+                console.log(" -- Danh sach vi tri sp ads da loai tru -- ")
+                console.log(danh_sach_vi_tri_ads_da_loai_tru.length)
+                let random_ads = Math.floor(Math.random() * (danh_sach_vi_tri_ads_da_loai_tru.length - 1)) ;
+                
+                get_vi_tri_san_pham_click = {
+                    vi_tri: danh_sach_vi_tri_ads_da_loai_tru[random_ads].vi_tri,
+                    url: danh_sach_vi_tri_ads_da_loai_tru[random_ads].url
+                }
+            }
+        } catch (error) {
+            console.log(error)
+            get_vi_tri_san_pham_click = false
+            return get_vi_tri_san_pham_click
+                
+        }
+            
+
         }
         return get_vi_tri_san_pham_click
-
-    } catch (error) {
-        console.log(error)
-        return get_vi_tri_san_pham_click
-    }
 }
 
 // chọn thuộc tính sản phẩm
@@ -1831,12 +1840,12 @@ runAllTime = async () => {
         accounts = dataShopee.accounts
 
         listProducts = []
-        if (slave_info.type != "seo_all_top") {
-        dataShopee.products.forEach(item => {
-            product = item.fullname
-            listProducts.push(product)
-        })
-    }
+        if (slave_info.type != "seo_all_top" || slave_info.type != "click_ads_lien_quan") {
+            dataShopee.products.forEach(item => {
+                product = item.fullname
+                listProducts.push(product)
+            })
+        }
         listcategories = dataShopee.categories
     } catch (error) {
         console.log(error)
@@ -2115,7 +2124,7 @@ runAllTime = async () => {
                                 let product_check_id = product_check.fullname
                                 productInfo_ads_lien_quan = await get_vi_tri_san_pham(page, product_check_id, 3)
 
-                                if (productInfo_ads_lien_quan.vi_tri) {
+                                if (productInfo_ads_lien_quan != false) {
 
                                     let products_page = await page.$$('[data-sqe="link"]')
                                     // Click sản phẩm của shop
@@ -2126,24 +2135,25 @@ runAllTime = async () => {
 
                                     // Xác định các vị trí ads đã loại trừ shop
                                     let indexAds = await get_vi_tri_san_pham_ads_lien_quan(page, shop_loai_tru_ads_lien_quan, shop_click_ads_lien_quan)
-
+                                    timeout = Math.floor(Math.random() * (5000 - 4000)) + 4000
+                                    await page.waitForTimeout(timeout)
                                     if (indexAds == false) {
                                         await browser.close();
                                         return false
                                     }
-
-                                    console.log("---------- Vị trí sp Ads ----------")
-                                    console.log(indexAds)
-
                                     let productsList = await page.$$('[data-sqe="link"]')
 
-                                    // await page.waitForTimeout(999999)
-                                    await productsList[indexAds.vi_tri].click()
+                                    console.log("Tong so san pham " + productsList.length)
+                                    console.log("---------- Vị trí sp Ads ----------")
+                                    console.log(indexAds)
+                                    let xx = parseInt(indexAds.vi_tri)
+
+                                    await productsList[xx].click()
                                     timeout = Math.floor(Math.random() * (3000 - 1000)) + 1000
                                     await page.waitForTimeout(timeout)
 
                                     console.log("---------- Link sản phẩm click ads ----------")
-                                    currentUrl = await page.url()
+                                    let currentUrl = await page.url()
                                     console.log(currentUrl)
                                     let checkvariationAds = await chooseVariation(page, 4)
                                     timeout = Math.floor(Math.random() * (3000 - 1000)) + 1000
@@ -2824,7 +2834,7 @@ runAllTime = async () => {
 
                                 // danh sách product không nằm trong file saveproduct.txt
 
-                                productInfo = await getproduct(page, saveProduct, 10, idShopsfull)
+                                let productInfo = await getproduct(page, saveProduct, 10, idShopsfull)
 
                                 if (productInfo.vitri) {
                                     today = new Date().toLocaleString();
@@ -2855,6 +2865,7 @@ runAllTime = async () => {
                                     timeout = Math.floor(Math.random() * (5000 - 3000)) + 3000
                                     await page.waitForTimeout(timeout)
                                     productLink = await page.url()
+                                    console.log(productLink + "  --  " + productInfo.shopId)
                                     await actionShopee(page)
                                     await page.waitForTimeout(1000);
 
@@ -2879,6 +2890,7 @@ runAllTime = async () => {
                             await browser.close();
                         }
                     } catch (error) {
+                        console.log(error.message)
                         console.log(error)
                     }
                     await browser.close();
@@ -2898,16 +2910,25 @@ runAllTime = async () => {
 //(async () => {
 if (mode === "DEV") {
     (async () => {
-        await runAllTime()
+
         if (os_slave == "LINUX") {
-            await shell.exec('rm -rf ' + profileDir);
+            await shell.exec('rm -rf ' + profile_Dir);
         } else {
-            await shell.exec('Rmdir /S /q ' + profileDir);
+            await shell.exec('Rmdir /S /q ' + profile_Dir);
         }
+
+        await runAllTime()
+
     })();
 } else {
 
     (async () => {
+        if (os_slave == "LINUX") {
+            await shell.exec('rm -rf ' + profile_Dir);
+        } else {
+            await shell.exec('Rmdir /S /q ' + profile_Dir);
+        }
+
         await runAllTime()
 
     })();
