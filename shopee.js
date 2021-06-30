@@ -948,7 +948,7 @@ get_vi_tri_san_pham_ads_lien_quan = async (page, shop_loai_tru_ads_lien_quan, sh
                 await check_button_click[2].click()
                 timeout = Math.floor(Math.random() * (2000 - 1000)) + 1000;
                 await page.waitForTimeout(timeout);
-                }catch{
+                }catch(error){
                     console.log(error)
                 }
             }
