@@ -1863,7 +1863,8 @@ runAllTime = async () => {
 
         if (data) {
             data.forEach(async (user, index) => {   // Foreach object Chạy song song các tab chromium
-
+                let userAgent
+                
                 if (slave_info.type == "click_ads" || slave_info.type == "click_ads_vi_tri" || slave_info.type == "click_ads_lien_quan") {
                     console.log("----- START CLICK ADS -----")
                     extension = ""
@@ -2563,7 +2564,7 @@ runAllTime = async () => {
                         devtools: false,
                         args: param
                     });
-
+                    
                     const page = (await browser.pages())[0];
                     if (!user.user_agent) {
                         userAgent = randomUseragent.getRandom(function (ua) {
