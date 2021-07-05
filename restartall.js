@@ -6,6 +6,14 @@ slavenumber = process.env.SLAVE
 os_slave = process.env.OS_SLAVE
 
 restartAll = async () => {
+    if(os_slave != "LINUX"){
+        exec("shutdown -r", (error) => {
+            if (error) {
+                console.log(`error: ${error.message}`);
+                return;
+            }
+        });
+     }
 
  console.log("------- Restart all -------")
 
@@ -13,7 +21,7 @@ restartAll = async () => {
  console.log(check)
  if(check){
  //exec("shutdown -r", (error) => {
-     if(os_slave != "LINUX"){
+    if(os_slave != "LINUX"){
         exec("tskill chrome", (error) => {
             if (error) {
                 console.log(`error: ${error.message}`);
@@ -39,8 +47,9 @@ restartAll = async () => {
     });
  }
    
+
 }
 
-cron.schedule('*/5 * * * *', async () => {
+cron.schedule('0 */1 * * *', async () => {
     await restartAll()
   })
