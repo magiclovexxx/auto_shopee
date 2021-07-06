@@ -14,12 +14,14 @@ restartAll = async () => {
             }
         });
      }
+}
 
- console.log("------- Restart all -------")
-
+restart_pm2 = async () => {
+    
  let check = await actionsShopee.check_slave_die(slavenumber)
  console.log(check)
  if(check){
+    console.log("------- Restart all -------")
  //exec("shutdown -r", (error) => {
     if(os_slave != "LINUX"){
         exec("tskill chrome", (error) => {
@@ -52,4 +54,8 @@ restartAll = async () => {
 
 cron.schedule('0 */1 * * *', async () => {
     await restartAll()
+  })
+
+  cron.schedule('*/5 * * * *', async () => {
+    await restart_pm2()
   })
