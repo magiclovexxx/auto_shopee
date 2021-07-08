@@ -37,8 +37,8 @@ mode = process.env.MODE
 disable_image = process.env.DISABLE_IMAGE     // k load ảnh
 disable_css = process.env.DISABLE_CSS     // k load css
 
-disable_image = 1     // k load ảnh
-disable_css = 1     // k load css
+disable_image = 0     // k load ảnh
+disable_css = 0     // k load css
 
 profile_Dir = profileDir
 
