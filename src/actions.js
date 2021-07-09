@@ -1,7 +1,7 @@
 const axios = require('axios').default;
 
 const check_slave_die = async(slave)=>{
-    let url = "https://auto.tranquoctoan.com/api_user/check_slave?slave=" + slave
+    let url = "https://tangtuongtac.net/api_user/check_slave?slave=" + slave
     let check_slave
     await axios.get(url, {
         timeout: 50000
