@@ -986,24 +986,33 @@ get_vi_tri_san_pham_ads_lien_quan = async (page, shop_loai_tru_ads_lien_quan, sh
             // console.log(danh_sach_vi_tri_ads)
             // Tim vi tri ads shop can click
 
-            // danh_sach_vi_tri_ads.forEach(item =>{
-            //     shop_click_ads_lien_quan.forEach(item2 =>{
-            //         let check_shop = item.url.split(item2.fullname)
-            //         if(check_shop.length > 1){
-            //             console.log("--- Tìm thấy shop muốn click ads ---" + item2.fullname)
-            //             console.log(item.url)
+            let danh_sach_vi_tri_cac_shop_can_click = []
+            danh_sach_vi_tri_ads.forEach(item =>{
+                shop_click_ads_lien_quan.forEach(item2 =>{
+                    let check_shop = item.url.split(item2.fullname)
+                    if(check_shop.length > 1){
+                        console.log("--- Tìm thấy shop muốn click ads ---" + item2.fullname)
+                        console.log(item.url)
 
-            //             get_vi_tri_san_pham_click = {
-            //                 vi_tri: item.vi_tri,
-            //                 url: item.url
-            //             }
-            //             return
-            //         }
-            //     })
+                        get_vi_tri_san_pham_click = {
+                            vi_tri: item.vi_tri,
+                            url: item.url
+                        }
+                        danh_sach_vi_tri_cac_shop_can_click.push(get_vi_tri_san_pham_click)
+                    }
+                })
 
-            // })
+            })
 
-            if (get_vi_tri_san_pham_click != false) {
+            if (danh_sach_vi_tri_cac_shop_can_click.length) {
+                console.log( " --- Danh sách Vị trí ads shop cần click ---")
+                console.log(danh_sach_vi_tri_cac_shop_can_click)
+
+                let random_ads = Math.floor(Math.random() * (danh_sach_vi_tri_cac_shop_can_click.length - 1));
+                get_vi_tri_san_pham_click = danh_sach_vi_tri_cac_shop_can_click[random_ads]
+                console.log( " --- Vị trí ads shop cần click ---")
+                console.log(get_vi_tri_san_pham_click)
+               
                 return get_vi_tri_san_pham_click
             } else {
                 console.log("--- click ads ngẫu nhiên ---")
