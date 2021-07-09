@@ -57,5 +57,5 @@ cron.schedule('0 */1 * * *', async () => {
   })
 
   cron.schedule('*/5 * * * *', async () => {
-    //await restart_pm2()
+    await restart_pm2()
   })
