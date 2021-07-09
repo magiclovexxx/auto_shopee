@@ -1719,8 +1719,112 @@ connectDcomV2 = async () => {
 
 }
 
-runAllTime = async () => {
+gen_browser = async (option) =>{
+    let profile_dir = option.profile_dir
+    let proxy1 = option.proxy
+    let headless_mode = option.headless_mode
+    let network = option.network
 
+    console.log("Profile chrome link: " + profile_dir)
+
+        // let param = [
+        //     `--user-data-dir=${profile_dir}`,      // load profile chromium
+        //     '--disable-gpu',
+        //     '--no-sandbox',
+        //     '--lang=en-US',
+        //     '--disable-setuid-sandbox',
+        //     '--disable-dev-shm-usage',
+        //     '--disable-background-timer-throttling',
+        //     '--disable-backgrounding-occluded-windows',
+        //     '--disable-renderer-backgrounding',
+        //     '--disable-dev-shm-usage',
+        //     '--disable-accelerated-2d-canvas',
+        //     '--no-first-run',
+        // ]
+        let param = []
+        if (network == "proxy") {
+            //'--proxy-server=103.90.230.170:9043'
+           
+            let proxy_for_slave = "--proxy-server=" + proxy1.proxy_ip + ":" + proxy1.proxy_port
+         
+            param = [
+                proxy_for_slave
+            ]
+            param.push('--ignore-certificate-errors')
+            param.push(`--user-data-dir=${profile_dir}`)
+        }
+        console.log(param)
+        const browser = await puppeteer.launch({
+            //executablePath: chromiumDir,
+            headless: headless_mode,
+            devtools: false,
+            args: param
+        });
+        
+        return browser
+}
+
+gen_page = async (browser, option) => {
+
+    let page = (await browser.pages())[0];
+        
+        let user_agent1 = option.user_agent
+        let proxy1 = option.proxy
+        let cookie1 = option.cookie
+        let network = option.network
+
+        //await page.setUserAgent(user_agent1)
+       
+        // Random kích cỡ màn hình
+        width = Math.floor(Math.random() * (1280 - 1000)) + 1000;;
+        height = Math.floor(Math.random() * (800 - 600)) + 600;;
+
+        await page.setViewport({
+            width: 1280,
+            height: 800
+        });
+
+        if (network == "proxy") {
+            let proxy_pass = proxy1.proxy_password.split("\r")[0]
+            console.log(" proxxy ip: " + proxy1.proxy_ip + ":" + proxy1.proxy_port + ":" + proxy1.proxy_username + ":" + proxy_pass)
+            await page.authenticate({ username: proxy1.proxy_username, password: proxy_pass });
+        }
+
+        try {
+            if (cookie1.length) {
+                let cookie111 = JSON.parse(cookie1)
+                //console.log(cookie111)
+                cookie111.forEach(async (item) => {
+                    await page.setCookie(item);
+                })
+            }
+        } catch (e) {
+            console.log(" ---- Không có coookie ----")
+        }
+
+       
+
+        if (disable_css == 1 || disable_image == 1) {
+            
+            await page.setRequestInterception(true);
+
+            // --- Chặn load css --- /
+            if (disable_image == 1) {
+                page.on('request', (req) => {
+                    if (req.resourceType() === 'image') {
+                        req.abort();
+                    } else {
+                        req.continue();
+                    }
+
+                });
+            }
+        }
+        return page
+}
+
+runAllTime = async () => {
+    let proxy = []
     // lấy dữ liệu từ master
 
     // lấy dữ liệu từ master
@@ -1747,7 +1851,7 @@ runAllTime = async () => {
         getDataShopee = await axios.get(linkgetdataShopeeDir)
         dataShopee = getDataShopee.data
         slave_info = dataShopee.slave_info
-        proxy = []
+        
         var checkVersion = fs.readFileSync("version.txt", { flag: "as+" });
         if (checkVersion) {
             checkVersion = checkVersion.toString();
@@ -1876,104 +1980,44 @@ runAllTime = async () => {
                     console.log("----- START CLICK ADS -----")
                     extension = ""
                     let profileChrome = profileDir + user.username        // Link profile chromium của từng tài khoản facebook
-                    console.log("Profile chrome link: " + profileChrome)
-                    let param = [
-                        `--user-data-dir=${profileChrome}`,      // load profile chromium
-                        '--disable-gpu',
-                        '--no-sandbox',
-                        '--lang=en-US',
-                        '--disable-setuid-sandbox',
-                        '--disable-dev-shm-usage',
-                        '--disable-background-timer-throttling',
-                        '--disable-backgrounding-occluded-windows',
-                        '--disable-renderer-backgrounding',
-                        '--disable-dev-shm-usage',
-                        '--disable-accelerated-2d-canvas',
-                        '--no-first-run',
-                    ]
+                    
+                    // if (!user.user_agent) {
+                    //     userAgent = randomUseragent.getRandom(function (ua) {
 
-                    if (slave_info.network == "proxy") {
-                        //'--proxy-server=103.90.230.170:9043'
+                    //         return (ua.osName === 'Windows' && ua.osVersion === "10");
+                    //     });
+                    // } else {
+                    //     userAgent = user.user_agent
+                    // }                    
+                  
+                    userAgent = randomUseragent.getRandom(function (ua) {
 
-                        let proxy_for_slave = "--proxy-server=" + proxy.proxy_ip + ":" + proxy.proxy_port
-                        param.push(proxy_for_slave)
-                        param.push('--ignore-certificate-errors')
-                    }
-
-                    const browser = await puppeteer.launch({
-                        //executablePath: chromiumDir,
-                        headless: headless_mode,
-                        devtools: false,
-                        args: param
+                        return (ua.osName === 'Windows' && ua.osVersion === "10");
                     });
-                    const page = (await browser.pages())[0];
-                    if (!user.user_agent) {
-                        userAgent = randomUseragent.getRandom(function (ua) {
 
-                            return (ua.osName === 'Windows' && ua.osVersion === "10");
-                        });
-                    } else {
-                        userAgent = user.user_agent
+                    let option1 = {
+                        user_agent: userAgent,
+                        proxy: proxy,
+                        profile_dir: profileChrome,
+                        cookie: user.cookie,
+                        network: slave_info.network,
+                        headless_mode: headless_mode
                     }
-                    await page.setUserAgent(userAgent)
+                    
+                    let browser = await gen_browser(option1)
+                    let page = await gen_page(browser,option1)
+                   
+                    
                     console.log(userAgent)
-                    // Random kích cỡ màn hình
-                    width = Math.floor(Math.random() * (1280 - 1000)) + 1000;;
-                    height = Math.floor(Math.random() * (800 - 600)) + 600;;
-
-                    await page.setViewport({
-                        width: width,
-                        height: height
-                    });
-                    if (slave_info.network == "proxy") {
-                        let proxy_pass = proxy.proxy_password.split("\r")[0]
-                        console.log(" proxxy ip: " + proxy.proxy_ip + ":" + proxy.proxy_port + ":" + proxy.proxy_username + ":" + proxy_pass)
-                        await page.authenticate({ username: proxy.proxy_username, password: proxy_pass });
-                    }
-                    try {
-                        if (user.cookie.length) {
-                            let cookie111 = JSON.parse(user.cookie)
-                            //console.log(cookie111)
-                            cookie111.forEach(async (item) => {
-                                await page.setCookie(item);
-                            })
-                        }
-                    } catch (e) {
-                        console.log(" ---- Không có coookie ----")
-                    }
-
-                    await page.setRequestInterception(true);
-
-                    if (disable_css == 1 || disable_image == 1) {
-                        await page.setRequestInterception(true);
-
-                        // --- Chặn load css --- /
-                        if (disable_image == 1) {
-                            page.on('request', (req) => {
-                                if (req.resourceType() === 'image') {
-                                    req.abort();
-                                } else {
-                                    req.continue();
-                                }
-
-                                // if (req.resourceType() === 'stylesheet' || req.resourceType() === 'font' || req.resourceType() === 'image') {
-                                //     req.abort();
-                                // } else {
-                                //     req.continue();
-                                // }
-
-                            });
-                        }
-                    }
-
+                  
                     try {
                         if ((index == 0) && (mode !== "DEV")) {
                             // đổi ip
-
-                            console.log("Đổi ip mạng")
+                            
                             if (dcomVersion == "V2") {
                                 // await changeIpDcomV2()
                             } else {
+                                console.log("Đổi ip mạng")
                                 await page.goto("http://192.168.8.1/html/home.html")
                                 //  timeout = Math.floor(Math.random() * (2000 - 1000)) + 1000;
                                 //   await page.waitForTimeout(timeout)
@@ -2372,8 +2416,6 @@ runAllTime = async () => {
                         console.log(" ---- Không có coookie ----")
                     }
 
-                    await page.setRequestInterception(true);
-
                     if (disable_css == 1 || disable_image == 1) {
                         await page.setRequestInterception(true);
 
@@ -2666,8 +2708,7 @@ runAllTime = async () => {
                         console.log(" ---- Không có coookie ----")
                     }
 
-                    await page.setRequestInterception(true);
-
+                  
                     if (disable_css == 1 || disable_image == 1) {
                         await page.setRequestInterception(true);
 
