@@ -1864,6 +1864,7 @@ runAllTime = async () => {
         if (newVersion !== checkVersion && mode != "DEV") {
             console.log("Cập nhật code " + os_slave);
             if (os_slave == "LINUX") {
+                shell.exec('cd /home/auto_shopee');
                 shell.exec('git stash; git pull origin master; npm install; pm2 start shopee.js; pm2 start restartall.js; pm2 startup; pm2 save; pm2 restart all');
             } else {
 
