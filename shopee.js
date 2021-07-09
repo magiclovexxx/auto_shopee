@@ -12,11 +12,11 @@ var shell = require('shelljs');
 require('events').EventEmitter.defaultMaxListeners = 105;
 
 
-linkShopeeUpdate = "http://auto.tranquoctoan.com/api_user/shopeeupdate"     // Link shopee update thứ hạng sản phẩm
-linkShopeeAccountUpdate = "https://auto.tranquoctoan.com/api_user/shopeeAccountUpdate" // Link update account shopee status
-linkShopeeUpdateAds = "http://auto.tranquoctoan.com/api_user/shopeeUpdateAds" // Link update shopee ads index
-dataShopeeDir = "http://auto.tranquoctoan.com/api_user/dataShopee"     // Link shopee update thứ hạng sản phẩm
-shopeeUpdateSeoSanPhamDir = "http://auto.tranquoctoan.com/api_user/shopeeUpdateSeoSanPham"     // Link shopee update seo sản phẩm
+linkShopeeUpdate = "http://tangtuongtac.net/api_user/shopeeupdate"     // Link shopee update thứ hạng sản phẩm
+linkShopeeAccountUpdate = "https://tangtuongtac.net/api_user/shopeeAccountUpdate" // Link update account shopee status
+linkShopeeUpdateAds = "http://tangtuongtac.net/api_user/shopeeUpdateAds" // Link update shopee ads index
+dataShopeeDir = "http://tangtuongtac.net/api_user/dataShopee"     // Link shopee update thứ hạng sản phẩm
+shopeeUpdateSeoSanPhamDir = "http://tangtuongtac.net/api_user/shopeeUpdateSeoSanPham"     // Link shopee update seo sản phẩm
 get_proxy_url = "https://hotaso.tranquoctoan.com/api_user/get_proxy"
 slavenumber = process.env.SLAVE
 clickAds = process.env.CLICKADS
@@ -1727,33 +1727,32 @@ gen_browser = async (option) =>{
 
     console.log("Profile chrome link: " + profile_dir)
 
-        // let param = [
-        //     `--user-data-dir=${profile_dir}`,      // load profile chromium
-        //     '--disable-gpu',
-        //     '--no-sandbox',
-        //     '--lang=en-US',
-        //     '--disable-setuid-sandbox',
-        //     '--disable-dev-shm-usage',
-        //     '--disable-background-timer-throttling',
-        //     '--disable-backgrounding-occluded-windows',
-        //     '--disable-renderer-backgrounding',
-        //     '--disable-dev-shm-usage',
-        //     '--disable-accelerated-2d-canvas',
-        //     '--no-first-run',
-        // ]
-        let param = []
+        let param = [
+            `--user-data-dir=${profile_dir}`,      // load profile chromium
+            '--disable-gpu',
+            '--no-sandbox',
+            '--lang=en-US',
+            '--disable-setuid-sandbox',
+            '--disable-dev-shm-usage',
+            '--disable-background-timer-throttling',
+            '--disable-backgrounding-occluded-windows',
+            '--disable-renderer-backgrounding',
+            '--disable-dev-shm-usage',
+            '--disable-accelerated-2d-canvas',
+            '--no-first-run',
+        ]
+       
         if (network == "proxy") {
             //'--proxy-server=103.90.230.170:9043'
            
             let proxy_for_slave = "--proxy-server=" + proxy1.proxy_ip + ":" + proxy1.proxy_port
          
-            param = [
-                proxy_for_slave
-            ]
+          
             param.push('--ignore-certificate-errors')
-            param.push(`--user-data-dir=${profile_dir}`)
+            param.push(proxy_for_slave)
+           
         }
-        console.log(param)
+     
         const browser = await puppeteer.launch({
             //executablePath: chromiumDir,
             headless: headless_mode,
