@@ -1875,7 +1875,7 @@ runAllTime = async () => {
         if (newVersion !== checkVersion && mode != "DEV") {
             console.log("Cập nhật code " + os_slave);
             if (os_slave == "LINUX") {
-                const myShellScript = exec('update.sh /');
+                const myShellScript = exec('sh update.sh /');
                 myShellScript.stdout.on('data', (data) => {
                     // do whatever you want here with data
                 });
