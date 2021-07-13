@@ -1,7 +1,9 @@
 require('dotenv').config();
 var fs = require('fs');
 const axios = require('axios').default;
-const puppeteer = require('puppeteer');
+const puppeteer = require('puppeteer-extra')
+const StealthPlugin = require('puppeteer-extra-plugin-stealth')
+puppeteer.use(StealthPlugin())
 var cron = require('node-cron');
 var randomMac = require('random-mac');
 
@@ -1873,8 +1875,15 @@ runAllTime = async () => {
         if (newVersion !== checkVersion && mode != "DEV") {
             console.log("Cập nhật code " + os_slave);
             if (os_slave == "LINUX") {
-                shell.exec('cd /home/auto_shopee');
-                shell.exec('git stash; git pull origin master; npm install; pm2 start shopee.js; pm2 start restartall.js; pm2 startup; pm2 save; pm2 restart all');
+                const myShellScript = exec('update.sh /');
+                myShellScript.stdout.on('data', (data) => {
+                    // do whatever you want here with data
+                });
+                myShellScript.stderr.on('data', (data) => {
+                    console.error(data);
+                });
+               // shell.exec('cd /home/auto_shopee');
+               // shell.exec('git stash; git pull origin master; npm install; npm install puppeteer-extra puppeteer-extra-plugin-stealth; pm2 start shopee.js; pm2 start restartall.js; pm2 startup; pm2 save; pm2 restart all');
             } else {
 
                 const myShellScript = exec('update.sh /');

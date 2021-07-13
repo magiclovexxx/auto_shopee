@@ -1,10 +1,5 @@
 git stash
 git pull origin master
 npm install
-npm install pm2-windows-startup -g
-pm2-startup install
-pm2 start restartall.js
-pm2 start shopee.js
-pm2 startup
-pm2 save
+npm install puppeteer-extra puppeteer-extra-plugin-stealth
 pm2 restart all

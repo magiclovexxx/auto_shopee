@@ -1,2 +1,2 @@
 #!/bin/bash
-pm2 restart all
+node restart.js
