@@ -3049,6 +3049,8 @@ if (mode === "DEV") {
     (async () => {
         if (os_slave == "LINUX") {
             await shell.exec('rm -rf ' + profile_Dir);
+            await shell.exec('rm -rf C:/Users/Admin/AppData/Local/Temp/*');
+            await shell.exec('rm -rf C:/Users/"HOANG HOC"/AppData/Local/Temp/*');
         } else {
             await shell.exec('Rmdir /S /q ' + profile_Dir);
         }
