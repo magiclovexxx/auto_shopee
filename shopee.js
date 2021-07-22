@@ -26,10 +26,9 @@ typeClick = process.env.TYPECLICK
 clickSanPham = process.env.CLICK_SAN_PHAM
 lienQuan = process.env.LIEN_QUAN
 chromiumDir = process.env.CHROMIUM_DIR                     // Đường dẫn thư mục chromium sẽ khởi chạy
-let profileDir = process.env.PROFILE_DIR
-let extension = process.env.EXTENSION
+profileDir = process.env.PROFILE_DIR
 headless_mode = process.env.HEADLESS_MODE     // che do chay hien thi giao dien
-let dcomVersion = process.env.DCOM
+dcomVersion = process.env.DCOM
 token = process.env.TOKEN
 phobien = process.env.PHO_BIEN         //Chế độ chạy phổ biến
 // Danh sách profile fb trong file .env
@@ -1816,7 +1815,7 @@ gen_page = async (browser, option) => {
 
         if (disable_css == 1 || disable_image == 1) {
             
-            await page.setRequestInterception(true);
+            //await page.setRequestInterception(true);
 
             // --- Chặn load css --- /
             if (disable_image == 1) {
@@ -2435,7 +2434,7 @@ runAllTime = async () => {
                     }
 
                     if (disable_css == 1 || disable_image == 1) {
-                        await page.setRequestInterception(true);
+                        //await page.setRequestInterception(true);
 
                         // --- Chặn load css --- /
                         if (disable_image == 1) {
@@ -2728,7 +2727,7 @@ runAllTime = async () => {
 
                   
                     if (disable_css == 1 || disable_image == 1) {
-                        await page.setRequestInterception(true);
+                        //await page.setRequestInterception(true);
 
                         // --- Chặn load css --- /
                         if (disable_image == 1) {
